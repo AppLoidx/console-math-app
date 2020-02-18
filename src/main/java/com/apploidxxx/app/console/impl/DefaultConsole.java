@@ -2,15 +2,16 @@ package com.apploidxxx.app.console.impl;
 
 import com.apploidxxx.app.console.Console;
 import org.jline.builtins.Completers;
-import org.jline.builtins.Widgets;
 import org.jline.reader.LineReader;
 import org.jline.reader.LineReaderBuilder;
 import org.jline.terminal.Terminal;
 import org.jline.terminal.TerminalBuilder;
+import org.jline.utils.InfoCmp;
 import org.jline.utils.NonBlockingReader;
 
-import java.io.*;
-import java.util.List;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.PrintStream;
 
 /**
  * @author Arthur Kupriyanov on 18.02.2020
@@ -18,14 +19,10 @@ import java.util.List;
 public class DefaultConsole implements Console {
     private static final int SPACE_CODE = 32;
     private static final int NEWLINE_CODE = 10;
-    private final BufferedReader bufferedReader;
     private final PrintStream out;
-    private final InputStream in;
     private final Terminal terminal;
 
     public DefaultConsole(InputStream in, PrintStream out) throws IOException {
-        this.in = in;
-        this.bufferedReader = new BufferedReader(new InputStreamReader(in));
         this.out = out;
         terminal = TerminalBuilder.builder()
                 .jna(true)
@@ -36,23 +33,26 @@ public class DefaultConsole implements Console {
 
     @Override
     public String readLine() throws IOException {
-        Completers.FileNameCompleter filesCompleter = new Completers.FileNameCompleter();
         LineReader reader = LineReaderBuilder.builder()
                 .terminal(terminal)
-                .completer(filesCompleter)
-                .variable(LineReader.SECONDARY_PROMPT_PATTERN, "%M%P > ")
+                .variable(LineReader.SECONDARY_PROMPT_PATTERN, "> ")
                 .variable(LineReader.INDENTATION, 2)
                 .build();
 
         return reader.readLine();
     }
 
+    @Override
+    public String readPath() throws IOException {
+        Completers.FileNameCompleter filesCompleter = new Completers.FileNameCompleter();
+        LineReader reader = LineReaderBuilder.builder()
+                .terminal(terminal)
+                .completer(filesCompleter)
+                .variable(LineReader.SECONDARY_PROMPT_PATTERN, "> ")
+                .variable(LineReader.INDENTATION, 2)
+                .build();
 
-    Widgets.CmdDesc myCommandDescription(Widgets.CmdLine line) {
-
-        Widgets.ArgDesc argDesc = new Widgets.ArgDesc("Some-Command");
-        return new Widgets.CmdDesc(List.of(argDesc));
-
+        return reader.readLine();
     }
 
     @Override
@@ -79,14 +79,18 @@ public class DefaultConsole implements Console {
     }
 
     @Override
-    public void clearScreen() throws IOException, InterruptedException {
-        new ProcessBuilder("cmd", "/c", "cls").inheritIO().start().waitFor();
+    public void clearScreen() {
+        terminal.puts(InfoCmp.Capability.clear_screen);
+        terminal.flush();
+
     }
+
 
     @Override
     public void print(String output) {
         out.print(output);
     }
+
 
     @Override
     public void println(String output) {
