@@ -1,6 +1,7 @@
 package com.apploidxxx.app.console;
 
 import java.io.IOException;
+import java.io.PrintStream;
 
 /**
  * @author Arthur Kupriyanov on 18.02.2020
@@ -13,6 +14,9 @@ public interface Console {
      * @throws IOException If an I/O error occurs
      */
     String readLine() throws IOException;
+
+    String readLine(String rightPrompt);
+    String readLine(String leftPrompt, String rightPrompt);
 
     /**
      * Read file system path from terminal
@@ -51,4 +55,9 @@ public interface Console {
      * @param output The String to be printed
      */
     void println(String output);
+
+    PrintStream getOut();
+
+    int getSize();
+
 }

@@ -4,8 +4,10 @@ import com.apploidxxx.app.console.Console;
 import org.jline.builtins.Completers;
 import org.jline.reader.LineReader;
 import org.jline.reader.LineReaderBuilder;
+import org.jline.reader.MaskingCallback;
 import org.jline.terminal.Terminal;
 import org.jline.terminal.TerminalBuilder;
+import org.jline.utils.AttributedString;
 import org.jline.utils.InfoCmp;
 import org.jline.utils.NonBlockingReader;
 
@@ -39,7 +41,29 @@ public class DefaultConsole implements Console {
                 .variable(LineReader.INDENTATION, 2)
                 .build();
 
-        return reader.readLine();
+        return reader.readLine(">");
+    }
+
+    @Override
+    public String readLine(String rightPrompt) {
+        LineReader reader = LineReaderBuilder.builder()
+                .terminal(terminal)
+                .variable(LineReader.SECONDARY_PROMPT_PATTERN, "> ")
+                .variable(LineReader.INDENTATION, 2)
+                .build();
+
+        return reader.readLine(">", rightPrompt, (MaskingCallback) null , null);
+    }
+
+    @Override
+    public String readLine(String leftPrompt, String rightPrompt) {
+        LineReader reader = LineReaderBuilder.builder()
+                .terminal(terminal)
+                .variable(LineReader.SECONDARY_PROMPT_PATTERN, "> ")
+                .variable(LineReader.INDENTATION, 2)
+                .build();
+
+        return reader.readLine(">" + leftPrompt, rightPrompt, (MaskingCallback) null , null);
     }
 
     @Override
@@ -52,9 +76,14 @@ public class DefaultConsole implements Console {
                 .variable(LineReader.INDENTATION, 2)
                 .build();
 
-        return reader.readLine();
+        return reader.readLine(">");
     }
 
+    /**
+     * Reads int from terminals and ignores all literal chars input
+     * @return User input
+     * @throws IOException  If an I/O error occurs
+     */
     @Override
     public int readInt() throws IOException {
         StringBuilder sb = new StringBuilder();
@@ -82,7 +111,6 @@ public class DefaultConsole implements Console {
     public void clearScreen() {
         terminal.puts(InfoCmp.Capability.clear_screen);
         terminal.flush();
-
     }
 
 
@@ -95,5 +123,15 @@ public class DefaultConsole implements Console {
     @Override
     public void println(String output) {
         out.println(output);
+    }
+
+    @Override
+    public PrintStream getOut() {
+        return out;
+    }
+
+    @Override
+    public int getSize() {
+        return terminal.getWidth();
     }
 }
