@@ -43,7 +43,10 @@ public class MatrixFile implements Command {
             }
 
             Matrix matrix = getMatrix(floatArray);
-
+            if (!GaussMatrixSolver.isCanBeSolved(matrix)){
+                console.println("Система не пригодна для решения стандартным методом Гаусса");
+                return;
+            }
             GaussMatrixSolver solver = new GaussMatrixSolver(matrix);
             ConsoleUtil.printSolution(matrix, solver, console);
         } catch (FileNotFoundException e) {

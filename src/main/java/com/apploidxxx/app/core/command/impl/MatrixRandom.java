@@ -26,8 +26,8 @@ public class MatrixRandom implements Command {
         try {
             int dimension = Integer.parseInt(args[1]);
 
-            if (dimension < 0 || dimension > 20){
-                console.println("Размер матрицы превышает допустимые значения");
+            if (dimension <= 0 || dimension > 20){
+                console.println("Размер матрицы не входит допустимые значения");
             } else {
                 solve(console, dimension);
             }

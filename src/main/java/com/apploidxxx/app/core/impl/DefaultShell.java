@@ -29,7 +29,7 @@ public class DefaultShell implements Shell {
         String command;
         do {
             command = console.readLine();
-
+            if (!command.equals("") && command.split(" ").length > 0)
             commandManager.getCommand(command.split(" ")[0]).execute(console, command);
         } while (isNotExitCommand(command));
     }

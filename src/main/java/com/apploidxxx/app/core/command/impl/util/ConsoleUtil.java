@@ -31,12 +31,19 @@ public class ConsoleUtil {
 
         console.println(" Исходная матрица:");
         printer.prettyPrint(matrix);
+
+        console.println(" \nДетерминант:");
+        console.println(String.format("%f", solver.getDeterminant()));
+
         console.println(" \nТреугольная матрица:");
         printer.prettyPrint(solver.getTriangleMatrix());
+
         console.println("\nПеременные:");
         printVariables(solver.getVariables(), console);
+
         console.println("\nНевязка:");
         printResidual(solver.getResidualColumn(), console);
+
         console.println("");
         ConsoleUtil.printLine(console);
     }

@@ -1,6 +1,7 @@
 package com.apploidxxx.app.core.command.impl.util;
 
 import com.apploidxxx.app.console.Console;
+import com.apploidxxx.app.core.exception.FloatOverflowException;
 import model.Matrix;
 import model.impl.SquareMatrix;
 
@@ -44,16 +45,23 @@ public class MatrixReader {
         } catch (NumberFormatException e){
             console.println("Неверный формат!");
             return readLineOfFloats(dimension, console);
+        } catch (FloatOverflowException e){
+            console.println("В введенных числах было замечено число превышающее допустимые нормы Float Value Set   ");
+            console.println("Введите другое число");
+            return readLineOfFloats(dimension, console);
         }
 
     }
 
     public static float[] parseLine(String line){
-        String[] args = line.split(" ");
+        String[] args = line.split("\\s+");
         float[] values = new float[args.length];
         int index = 0;
         for (String arg : args){
             float number = Float.parseFloat(arg);
+            if (Float.isInfinite(number)){
+                throw new FloatOverflowException();
+            }
             values[index] = number;
             index++;
         }
