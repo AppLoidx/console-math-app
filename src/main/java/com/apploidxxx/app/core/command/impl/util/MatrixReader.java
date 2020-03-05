@@ -5,7 +5,6 @@ import model.Matrix;
 import model.impl.SquareMatrix;
 
 import java.util.Arrays;
-import java.util.stream.IntStream;
 
 /**
  * @author Arthur Kupriyanov on 05.03.2020

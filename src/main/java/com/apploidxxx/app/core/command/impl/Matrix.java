@@ -6,11 +6,6 @@ import com.apploidxxx.app.core.command.impl.util.ConsoleUtil;
 import com.apploidxxx.app.core.command.impl.util.MatrixReader;
 import com.apploidxxx.app.core.command.stereotype.Executable;
 import core.impl.GaussMatrixSolver;
-import util.printer.MatrixPrinter;
-import util.printer.impl.DatabaseLikePrinter;
-import util.printer.impl.SimplePrettyPrinter;
-
-import java.io.IOException;
 
 /**
  * @author Arthur Kupriyanov on 05.03.2020

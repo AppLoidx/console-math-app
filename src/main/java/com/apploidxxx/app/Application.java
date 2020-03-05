@@ -6,8 +6,6 @@ import com.apploidxxx.app.core.Shell;
 import com.apploidxxx.app.core.impl.DefaultShell;
 import org.jline.reader.UserInterruptException;
 
-import java.io.IOException;
-
 /**
  * @author Arthur Kupriyanov on 18.02.2020
  */

@@ -4,8 +4,6 @@ import com.apploidxxx.app.console.Console;
 import com.apploidxxx.app.core.Shell;
 import com.apploidxxx.app.core.command.CommandManager;
 
-import java.io.IOException;
-
 /**
  * @author Arthur Kupriyanov on 18.02.2020
  */
