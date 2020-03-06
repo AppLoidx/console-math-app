@@ -32,7 +32,7 @@ public class Matrix implements Command {
 
     private int readDimension(Console console) {
         console.print("Введите размерность матрицы: ");
-        String dimensionString = console.readLine("\nЧисло в диапозоне от 1 до 20 ");
+        String dimensionString = console.readLine("\n\n(Число в диапозоне от 1 до 20)");
 
         try {
             int dimension = Integer.parseInt(dimensionString);

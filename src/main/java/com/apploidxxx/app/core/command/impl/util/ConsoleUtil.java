@@ -28,6 +28,11 @@ public class ConsoleUtil {
                 new DatabaseLikePrinter(console.getOut());
 
         console.clearScreen();
+        float determinant = solver.getDeterminant();
+        if (0 == determinant || Float.isNaN(determinant)) {
+            console.println("Система имеет бесконечное количество решений или не имеет вовсе");
+            return;
+        }
 
         console.println(" Исходная матрица:");
         printer.prettyPrint(matrix);
@@ -51,7 +56,7 @@ public class ConsoleUtil {
     private static int readOneOrTwo(Console console) throws IOException {
         int value = console.readInt();
         if (value < 1 || value > 2) {
-            console.print("Выберите 1 или 2:");
+            console.print("\nВыберите 1 или 2:");
             return readOneOrTwo(console);
         }
 
