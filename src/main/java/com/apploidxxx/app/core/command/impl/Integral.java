@@ -23,11 +23,11 @@ public class Integral implements Command {
     private static final Function<Double, Double> FUNCTION_4 = x -> Math.sin(1d / x);
     private static final Function<Double, Double> FUNCTION_5 = x -> 1d / x;
 
-    private static final String FUNCTION_1_NAME = "(x^2 - 1) / (x-1) - removable";
-    private static final String FUNCTION_2_NAME = "x^2 - 1";
-    private static final String FUNCTION_3_NAME = "1 / x ^ 2 - infinite";
-    private static final String FUNCTION_4_NAME = "sin(1/x) - essential";
-    private static final String FUNCTION_5_NAME = "1 / x - infinite";
+    private static final String FUNCTION_1_NAME = "(x^2 - 1) / (x-1)    - removable";
+    private static final String FUNCTION_2_NAME = "x^2 - 1              - rly dude?";
+    private static final String FUNCTION_3_NAME = "1 / x ^ 2            - infinite";
+    private static final String FUNCTION_4_NAME = "sin(1/x)             - essential";
+    private static final String FUNCTION_5_NAME = "1 / x                - infinite";
 
     private static final String[] funcNames = new String[]{
             FUNCTION_1_NAME,

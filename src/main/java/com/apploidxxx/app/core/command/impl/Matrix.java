@@ -5,7 +5,6 @@ import com.apploidxxx.app.core.command.Command;
 import com.apploidxxx.app.core.command.impl.util.ConsoleUtil;
 import com.apploidxxx.app.core.command.impl.util.MatrixReader;
 import com.apploidxxx.app.core.command.stereotype.Executable;
-import com.apploidxxx.app.core.exception.FloatOverflowException;
 import core.impl.GaussMatrixSolver;
 
 /**

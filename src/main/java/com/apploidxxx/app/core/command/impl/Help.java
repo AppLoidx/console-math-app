@@ -11,6 +11,6 @@ import com.apploidxxx.app.core.command.stereotype.Executable;
 public class Help implements Command {
     @Override
     public void execute(Console console, String context) throws Exception {
-        console.println("matrix, matrix-file, matrix-random <размер_матрицы>");
+        console.println("matrix, matrix-file, matrix-random <размер_матрицы>, nonlinear, nonlinear-system");
     }
 }
