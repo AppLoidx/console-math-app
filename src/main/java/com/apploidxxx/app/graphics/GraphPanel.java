@@ -63,16 +63,12 @@ public class GraphPanel extends JPanel {
         g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
         double xScale = calculateXScale();
         double yScale = ((double) getHeight() - 2 * GLOBAL_PADDING - LABEL_PADDING) / (getMaxScore() - getMinScore());
-//        List<Point> graphPoints = calculateGraphPoints(xScale, yScale, scores.get(0));
-//        List<Point> graphPoints2 = calculateGraphPoints(xScale, yScale, scores.get(1));
-//        List<Point> graphPoints3 = calculateGraphPoints(xScale, yScale, scores.get(2));
+
         List<List<Point>> graphPoints = new ArrayList<>();
         for (Score score : scores) {
             if (score.isNotInGraph()) continue;
             graphPoints.add(calculateGraphPoints(xScale, yScale, score));
         }
-        //  background for only graph :
-        //  g2.fillRect(padding + labelPadding, padding, getWidth() - (2 * padding) - labelPadding, getHeight() - 2 * padding - labelPadding);
 
         g2.setColor(BACKGROUND_COLOR);
         g2.fillRect(0, 0, getWidth(), getHeight());
@@ -125,7 +121,6 @@ public class GraphPanel extends JPanel {
             int x1 = (int) (index * xScale + GLOBAL_PADDING + LABEL_PADDING);
             int y1 = (int) ((getMaxScore() - p.getY()) * yScale + GLOBAL_PADDING);
             graphPoints.add(new com.apploidxxx.app.graphics.Point(x1, y1));
-            System.out.println("Saving point " + x1 + " " + y1);
             index++;
 
         }
@@ -223,7 +218,6 @@ public class GraphPanel extends JPanel {
             g2.setColor(getLineColor(index));
             g2.setStroke(GRAPH_STROKE);
             for (int i = 0; i < graph.size() - 1; i++) {
-                System.out.println("Point : " + graph.get(i).x + " " + graph.get(i).y);
                 if (graph.get(i + 1).isBreakPoint() || graph.get(i).isBreakPoint()) {
                     continue;
                 }
@@ -311,12 +305,6 @@ public class GraphPanel extends JPanel {
         return maxScore;
     }
 
-//    public void setScores(Score score) {
-//        this.score = score;
-//        invalidate();
-//        this.repaint();
-//    }
-
     private static void createAndShowGui(List<Score> scores) {
 
         GraphPanel mainPanel = new GraphPanel(scores);
@@ -342,7 +330,6 @@ public class GraphPanel extends JPanel {
         for (int i = 0; i < maxDataPoints; i++) {
             add += 0.1d;
             score.addScore(Math.round(add * 100d) / 100d, func.apply(add));
-            System.out.println("Adding score " + Math.round(add * 100d) / 100d + " " + func.apply(add));
         }
         Function<Double, Double> func2 = Math::cos;
         final Score score2 = new Score();
@@ -350,7 +337,6 @@ public class GraphPanel extends JPanel {
         for (int i = 0; i < maxDataPoints; i++) {
             add += 0.1d;
             score2.addScore(Math.round(add * 100d) / 100d, func2.apply(add));
-            System.out.println("Adding score " + Math.round(add * 100d) / 100d + " " + func2.apply(add));
         }
         Function<Double, Double> func3 = x -> 5 * Math.pow(x, 2);
 
@@ -379,9 +365,12 @@ public class GraphPanel extends JPanel {
             scores.add(score);
         }
         Score answersScore = new Score();
+        answersScore.setNotInGraph(true);
         for (Double key : answers.keySet()) {
             answersScore.addScore(key, answers.get(key), true);
         }
+
+        scores.add(answersScore);
 
         SwingUtilities.invokeLater(() -> createAndShowGui(scores));
     }

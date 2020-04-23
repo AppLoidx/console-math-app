@@ -42,6 +42,13 @@ public class NonLinear implements Command {
         console.println("Точность: " + accuracy);
         console.println("-------------------------------------");
 
+        if (accuracy == 0d) {
+            console.println("Вы переоцениваете мощность этого компьютера. Пожалуйста, снизьте точность");
+            return;
+        } else if (Math.abs(boundaries[0] - boundaries[1]) > 1000) {
+            console.println("Выбрана слишком большая область. Это пагубно влияет на ЭВМ и график функции");
+        }
+
         boolean haveOneRoot = isHaveOneRoot(function, accuracy);
         if (isHaveRoot(function)) {
             if (!haveOneRoot) {
@@ -61,7 +68,7 @@ public class NonLinear implements Command {
             }
 //            double ans = solver.solve(function, accuracy);
 //            answers.put(ans, function.apply(ans));
-            GraphPanel.drawGraph(function, answers, accuracy);
+
         } catch (IllegalArgumentException e) {
             console.println("Error: " + e.getMessage());
             double lastAns = solver.getLastAnswer();
@@ -69,16 +76,16 @@ public class NonLinear implements Command {
                 console.println("Последний полученный ответ до ошибки: " + lastAns);
                 console.println("[WARN] Полученный ответ будет отличаться от желаемой точности");
                 answers.put(lastAns, function.apply(lastAns));
-                GraphPanel.drawGraph(function, answers, accuracy);
             }
         }
+
+        GraphPanel.drawGraph(function, answers, accuracy);
 
     }
 
     private void solve(NonLinearSolver solver, final ExtendedFunction func, double accuracy, final Map<Double, Double> answers, final int maxDepth, int counter) {
 
         double ans = solver.solve(func, accuracy);
-        System.out.println("bounds " + Arrays.toString(func.getBoundaries()));
 //        boolean alreadyIn = false;
 //        for (Double key : answers.keySet()) {
 //            if (DoubleUtil.isEqual(key, ans, accuracy)) {
@@ -92,7 +99,11 @@ public class NonLinear implements Command {
             return;
         }
 //        if (!alreadyIn && (ans > func.getBoundaries()[0] && ans < func.getBoundaries()[1])) {
+        if (ans < Math.max(func.getBoundaries()[0], func.getBoundaries()[1]) && ans > Math.min(func.getBoundaries()[0], func.getBoundaries()[1])) {
             answers.put(ans, func.apply(ans));
+        } else {
+            System.out.println("Ответ найдена за пределами области: x=" + ans);
+        }
 //        }
 
 //        try {
@@ -138,7 +149,6 @@ public class NonLinear implements Command {
             double nowVal = dFunc.apply(currentValue + step);
             changedSign = nowVal * oldVal < 0;
             if (changedSign) {
-                System.out.println("Changed sign");
                 break;
             }
             oldVal = nowVal;
