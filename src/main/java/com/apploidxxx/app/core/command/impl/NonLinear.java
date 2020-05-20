@@ -25,6 +25,7 @@ public class NonLinear implements Command {
 
     @Override
     public void execute(Console console, String context) throws Exception {
+
         SelectFunction selectedFunc = selectFunction(console);
         ExtendedFunction function = parseFunction(selectedFunc);
 

@@ -2,6 +2,7 @@ package com.apploidxxx.app;
 
 import com.apploidxxx.app.console.Console;
 import com.apploidxxx.app.console.impl.DefaultConsole;
+import com.apploidxxx.app.console.impl.SystemConsole;
 import com.apploidxxx.app.core.Shell;
 import com.apploidxxx.app.core.impl.DefaultShell;
 import org.jline.reader.UserInterruptException;
@@ -14,7 +15,7 @@ import java.io.InterruptedIOException;
 public class Application {
     public static void main(String[] args) throws Exception {
 
-        Console console = new DefaultConsole(System.in, System.out);
+        Console console = new SystemConsole(); // new DefaultConsole(System.in, System.out);
         Shell shell = new DefaultShell(console);
         try {
             shell.run();
