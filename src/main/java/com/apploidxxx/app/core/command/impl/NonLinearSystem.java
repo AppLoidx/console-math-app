@@ -39,15 +39,17 @@ public class NonLinearSystem implements Command {
 
         NonLinearSystemSolver solver = new NonLinearSystemSolver();
         Map<Double, Double> answers = new HashMap<>();
+        final double accuracy = readAccuracy(console);
         try {
-            double[] answer = solver.nonlinearSystemSolver(List.of(firstFunc, secondFunc), 0.001d);
+            double[] answer = solver.nonlinearSystemSolver(List.of(firstFunc, secondFunc), accuracy);
             answers.put(answer[0], answer[1]);
         } catch (IllegalArgumentException e) {
             console.println("[ERROR] " + e.getMessage());
         }
 
         try {
-            GraphPanel.drawGraph(List.of(firstFunc.getRepresentation(), secondFunc), answers, 0.001d);
+            GraphPanel.drawGraph(List.of(firstFunc.getRepresentation(), secondFunc), answers, accuracy);
+            console.println(answers.toString());
         } catch (IllegalArgumentException e) {
             console.println("Не удалось отобразить график: " + e.getMessage());
         }
@@ -84,16 +86,19 @@ public class NonLinearSystem implements Command {
         ExtendedFunction func2 = new ExtendedFunction(y -> Math.pow(Math.E, y));
         func2.setRepresentation(new ExtendedFunction(Math::log));
         func2.getRepresentation().setIsInRange(x -> x > 0);
-        func2.setDerivativeFunction(new DerivativeFunction(x -> Math.pow(Math.E, x)));
+        func2.setDerivativeFunction(new DerivativeFunction(x -> 1/x));//x -> Math.pow(Math.E, x)));
         createEntry(func2, "x = e^y", functionList1);
+
     }
 
     private static void initSecondFunctions(){
         ExtendedFunction func1 = new ExtendedFunction(x -> Math.sqrt(x + 1));
         func1.setDerivativeFunction(new DerivativeFunction(x ->  1/2d * (1 / Math.sqrt(x + 1))));
         func1.getDerivativeFunction().setIsInRange(x -> x >= -1);
+
         ExtendedFunction func2 = new ExtendedFunction(x -> Math.pow(x, 2));
         func2.setDerivativeFunction(new DerivativeFunction(x -> 2 * x));
+
         createEntry(func1, "x - y^2 = -1", functionList2);
         createEntry(func2, "y = x^2", functionList2);
 
@@ -132,7 +137,7 @@ public class NonLinearSystem implements Command {
 
         try {
             select = Integer.parseInt(console.readLine());
-            if (select >= functionList1.size()) {
+            if (select >= (initForFirst ? functionList1 : functionList2).size()) {
                 console.println("Введите правильное значение");
                 return selectFunction( console, initForFirst);
             } else {
@@ -143,7 +148,7 @@ public class NonLinearSystem implements Command {
             return selectFunction( console, initForFirst);
         } catch (IOException e) {
             console.println("[SYSTEM_ERROR] " + e.getMessage());
-            console.println("По умолчанию выбрана 0 фунцкия");
+            console.println("По умолчанию выбрана 0 функция");
             return 0;
         }
     }

@@ -1,6 +1,7 @@
 package com.apploidxxx.app.graphics;
 
 
+import java.awt.*;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -15,7 +16,7 @@ public class Score implements Iterable<Point>{
     private final LinkedList<Point> outOfGraphScore = new LinkedList<>();
     private boolean notInGraph;
     public void addScore(Double x, Double y) {
-        addScore(x, y, false);
+        addScore(x, y, false, Color.GREEN);
     }
 
 //    public void newGraph() {
@@ -27,9 +28,10 @@ public class Score implements Iterable<Point>{
 //        }
 //    }
 
-    public void addScore(Double x, Double y, boolean isNotInGraph) {
+    public void addScore(Double x, Double y, boolean isNotInGraph, Color color) {
         Point p = new Point(x, y);
         p.setNotInGraph(isNotInGraph);
+        p.setColor(color);
         if (isNotInGraph) {
             outOfGraphScore.add(p);
         } else {

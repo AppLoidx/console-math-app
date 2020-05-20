@@ -31,7 +31,9 @@ public class NonLinear implements Command {
         double[] boundaries = readBoundaries(console);
         function.setBoundaries(boundaries[0], boundaries[1]);
 
-        NonLinearSolver solver = selectSolver(console);
+        NonLinearSolver secantSolver = new NonLinearSecantSolver();
+        NonLinearSolver iterationSolver = new NonLinearIterationSolver();
+
         double accuracy = readAccuracy(console);
 
         console.clearScreen();
@@ -59,23 +61,32 @@ public class NonLinear implements Command {
         final Map<Double, Double> answers = new HashMap<>();
 
         try {
-            solve(solver, function, accuracy, answers, 10, 0);
-            console.println("Найдено решений : " + answers.size());
-            int index = 1;
-            for (Double key : answers.keySet()) {
-                console.println("x" + index + " = " + key);
-                index++;
-            }
-//            double ans = solver.solve(function, accuracy);
-//            answers.put(ans, function.apply(ans));
-
+            console.println("Iteration Solver:");
+            final Map<Double, Double> answer = new HashMap<>();
+            solveWithMethod(console, function, iterationSolver, accuracy, answer);
+            answers.putAll(answer);
         } catch (IllegalArgumentException e) {
-            console.println("Error: " + e.getMessage());
-            double lastAns = solver.getLastAnswer();
-            if (!Double.isNaN(lastAns) && !Double.isInfinite(lastAns)) {
-                console.println("Последний полученный ответ до ошибки: " + lastAns);
+            console.println("[Iteration Solver] Error: " + e.getMessage());
+            double lastAnsIteration = iterationSolver.getLastAnswer();
+            if (!Double.isNaN(lastAnsIteration ) && !Double.isInfinite(lastAnsIteration )) {
+                console.println("[Iteration Solver] Последний полученный ответ до ошибки: " + lastAnsIteration );
                 console.println("[WARN] Полученный ответ будет отличаться от желаемой точности");
-                answers.put(lastAns, function.apply(lastAns));
+                answers.put(lastAnsIteration , function.apply(lastAnsIteration ));
+            }
+        }
+
+        try {
+            console.println("Secant Solver:");
+            final Map<Double, Double> answer = new HashMap<>();
+            solveWithMethod(console, function, secantSolver, accuracy, answer);
+            answers.putAll(answer);
+        } catch (IllegalArgumentException e) {
+            console.println("[Secant Solver] Error: " + e.getMessage());
+            double lastAnsSecant = secantSolver.getLastAnswer();
+            if (!Double.isNaN(lastAnsSecant) && !Double.isInfinite(lastAnsSecant)) {
+                console.println("[Secant Solver] Последний полученный ответ до ошибки: " + lastAnsSecant);
+                console.println("[WARN] Полученный ответ будет отличаться от желаемой точности");
+                answers.put(lastAnsSecant, function.apply(lastAnsSecant));
             }
         }
 
@@ -83,52 +94,26 @@ public class NonLinear implements Command {
 
     }
 
+    private void solveWithMethod(Console console, ExtendedFunction function, NonLinearSolver secantSolver, double accuracy, Map<Double, Double> answers) {
+        solve(secantSolver, function, accuracy, answers, 10, 0);
+        for (Double key : answers.keySet()) {
+            console.println("x = " + key);
+        }
+    }
+
     private void solve(NonLinearSolver solver, final ExtendedFunction func, double accuracy, final Map<Double, Double> answers, final int maxDepth, int counter) {
 
         double ans = solver.solve(func, accuracy);
-//        boolean alreadyIn = false;
-//        for (Double key : answers.keySet()) {
-//            if (DoubleUtil.isEqual(key, ans, accuracy)) {
-//                System.out.println(key + " is already in");
-//                alreadyIn = true;
-//                break;
-//            }
-//        }
+
         counter++;
         if (counter > maxDepth) {
             return;
         }
-//        if (!alreadyIn && (ans > func.getBoundaries()[0] && ans < func.getBoundaries()[1])) {
         if (ans < Math.max(func.getBoundaries()[0], func.getBoundaries()[1]) && ans > Math.min(func.getBoundaries()[0], func.getBoundaries()[1])) {
             answers.put(ans, func.apply(ans));
         } else {
             System.out.println("Ответ найдена за пределами области: x=" + ans);
         }
-//        }
-
-//        try {
-//            if (!isHaveOneRoot(func, accuracy)) {
-//                double bottom = Math.min(func.getBoundaries()[0], func.getBoundaries()[1]);
-//                double top = Math.max(func.getBoundaries()[0], func.getBoundaries()[1]);
-//                ExtendedFunction funcLeftSide = new ExtendedFunction(func);
-//                ExtendedFunction funcRightSide = new ExtendedFunction(func);
-//                if (alreadyIn) {
-//                    funcLeftSide.setBoundaries(bottom, top/2);
-//                    funcRightSide.setBoundaries(top/2 + accuracy * 100, top);
-//                } else {
-//                    funcLeftSide.setBoundaries(bottom, Math.min(ans - accuracy * 100, top));
-//                    funcRightSide.setBoundaries(Math.max(ans + accuracy * 100, bottom), top);
-//                }
-//                solve(solver, funcLeftSide, accuracy, answers, maxDepth, counter);
-//                solve(solver, funcRightSide, accuracy, answers, maxDepth, counter);
-//            }
-//        } catch (StackOverflowError e) {
-//            System.err.println("\nStack overflow in recursive method");
-//        } catch (IllegalArgumentException e) {
-//            System.err.println(e.getMessage());
-//            System.err.println("Будет использован последний удавшийся ответ (точность будет не совпадать)");
-//            answers.put(solver.getLastAnswer(), func.apply(solver.getLastAnswer()));
-//        }
     }
 
 

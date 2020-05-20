@@ -36,6 +36,13 @@ public class GraphPanel extends JPanel {
             new Color(200, 48, 255)
     };
 
+    private final static Color[] DOT_COLORS = new Color[]{
+            new Color(0, 177, 22),
+            new Color(75, 255, 183),
+            new Color(67, 13, 102)
+    };
+    private int currentDotColor = 0;
+
     public GraphPanel(List<Score> scores) {
         this.scores = scores;
     }
@@ -341,8 +348,8 @@ public class GraphPanel extends JPanel {
         Function<Double, Double> func3 = x -> 5 * Math.pow(x, 2);
 
         Score score1 = new Score();
-        score1.addScore(0d, 0d, true);
-        score1.addScore(1d, 1d, true);
+        score1.addScore(0d, 0d, true, Color.GREEN);
+        score1.addScore(1d, 1d, true, Color.GREEN);
         score1.setNotInGraph(true);
         SwingUtilities.invokeLater(() -> createAndShowGui(List.of(score, score1, score2)));
     }
@@ -366,8 +373,9 @@ public class GraphPanel extends JPanel {
         }
         Score answersScore = new Score();
         answersScore.setNotInGraph(true);
+        int colorIndex = 0;
         for (Double key : answers.keySet()) {
-            answersScore.addScore(key, answers.get(key), true);
+            answersScore.addScore(key, answers.get(key), true, DOT_COLORS[colorIndex % (DOT_COLORS.length - 1)]);
         }
 
         scores.add(answersScore);
@@ -377,15 +385,13 @@ public class GraphPanel extends JPanel {
 
 
     public void drawOneDot(Graphics2D g2, Double xV, Double yV) {
-//        System.out.println("drawing one dot! [ " + xV + " " + yV + "]");
         List<Point> score = getAllPointsSorted();
         int x1 = calculateXPaddingToZeroPoint() + (int) (((getWidth() - LABEL_PADDING - 2 * GLOBAL_PADDING) / (score.get(graphSize() - 1).getX() - score.get(0).getX())) * xV + LABEL_PADDING + GLOBAL_PADDING);
         int y1 = getHeight() - calculateYPaddingToZeroPoint() - (int) ((getHeight() - LABEL_PADDING - 2 * GLOBAL_PADDING) / (getMaxScore() - getMinScore()) * yV + GLOBAL_PADDING + LABEL_PADDING);
         Point point = new Point(x1, y1);
-//        System.out.println("calculated : " + x1 + " " + y1);
-//        System.out.println((int) ((getHeight() - LABEL_PADDING - 2 * GLOBAL_PADDING) / (getMaxScore() - getMinScore()) * yV + GLOBAL_PADDING));
-//        System.out.println( calculateYPaddingToZeroPoint());
-        g2.setColor(Color.GREEN);
+
+        g2.setColor(DOT_COLORS[(currentDotColor++) % (DOT_COLORS.length - 1) ]);
+
         int pointW = POINT_WIDTH + 4;
         int x = (int) (point.x - pointW / 2);
         int y = (int) (point.y - pointW / 2);
