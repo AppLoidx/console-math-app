@@ -9,7 +9,10 @@ import util.function.DerivativeFunction;
 import util.function.ExtendedFunction;
 
 import java.io.IOException;
-import java.util.*;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @author Arthur Kupriyanov on 07.04.2020
@@ -17,12 +20,14 @@ import java.util.*;
 @Executable("nonlinear-system")
 public class NonLinearSystem implements Command {
 
-    private static final List<Map.Entry<String , ExtendedFunction>> functionList1 = new LinkedList<>();
-    private static final List<Map.Entry<String , ExtendedFunction>> functionList2 = new LinkedList<>();
+    private static final List<Map.Entry<String, ExtendedFunction>> functionList1 = new LinkedList<>();
+    private static final List<Map.Entry<String, ExtendedFunction>> functionList2 = new LinkedList<>();
+
     static {
         initFirstFunctions();
         initSecondFunctions();
     }
+
     @Override
     public void execute(Console console, String context) throws Exception {
 
@@ -32,10 +37,11 @@ public class NonLinearSystem implements Command {
         double top = readBoundary("Правая граница: ", console);
 
         ExtendedFunction firstFunc = functionList1.get(func1).getValue();
-        firstFunc.setBoundaries(bottom,top);
+        System.out.println("BOttom boundary : " + firstFunc.getRepresentation().apply(bottom));
+        firstFunc.setBoundaries(firstFunc.getRepresentation().apply(bottom), firstFunc.getRepresentation().apply(top));
         firstFunc.getRepresentation().setBoundaries(bottom, top);
         ExtendedFunction secondFunc = functionList2.get(func2).getValue();
-        secondFunc.setBoundaries(bottom,top);
+        secondFunc.setBoundaries(bottom, top);
 
         NonLinearSystemSolver solver = new NonLinearSystemSolver();
         Map<Double, Double> answers = new HashMap<>();
@@ -70,37 +76,43 @@ public class NonLinearSystem implements Command {
         console.println(s);
         try {
             return Double.parseDouble(console.readLine());
-        } catch (NumberFormatException e){
+        } catch (NumberFormatException e) {
             console.println("Введите правильное число");
             return readBoundary(s, console);
         }
     }
 
-    private static void initFirstFunctions(){
-        ExtendedFunction func1 = new ExtendedFunction(y -> Math.sqrt(y + 1));
-        func1.setDerivativeFunction(new DerivativeFunction(y ->  1/2d * (1 / Math.sqrt(y + 1))));
-        func1.getDerivativeFunction().setIsInRange(x -> x >= -1);
-        func1.setRepresentation(new ExtendedFunction(x -> Math.pow(x, 2) - 1));
-        createEntry(func1, "x^2 - y = 1", functionList1);
+    private static void initFirstFunctions() {
+        ExtendedFunction func1 = new ExtendedFunction(y -> {
+            if (y >= -1) {
+                return Math.pow(y + 1, 1 / 3d);
+            }
+            return -1 * Math.pow(Math.abs(y) + 1, 1 / 3d);
+        });
 
-        ExtendedFunction func2 = new ExtendedFunction(y -> Math.pow(Math.E, y));
-        func2.setRepresentation(new ExtendedFunction(Math::log));
-        func2.getRepresentation().setIsInRange(x -> x > 0);
-        func2.setDerivativeFunction(new DerivativeFunction(x -> 1/x));//x -> Math.pow(Math.E, x)));
-        createEntry(func2, "x = e^y", functionList1);
+//        func1.getDerivativeFunction().setIsInRange(x -> x >= -1);
+        func1.setRepresentation(new ExtendedFunction(x -> Math.pow(x, 3) - 1));
+        func1.setDerivativeFunction(new DerivativeFunction(x -> 3 * x));
+        createEntry(func1, "x^3 - y = 1", functionList1);
+
+        ExtendedFunction func2 = new ExtendedFunction(y -> Math.pow(y, 3) - 1);
+        func2.setRepresentation(new ExtendedFunction(x -> Math.pow(x + 1, 1 / 3d)));
+//        func2.getRepresentation().setIsInRange(x -> x > 0);
+        func2.setDerivativeFunction(new DerivativeFunction(x -> 1 / (3d * (Math.pow(x + 1, 2 / 3d))))); //x -> Math.pow(Math.E, x)));
+        createEntry(func2, "x = y^3 - 1", functionList1);
 
     }
 
-    private static void initSecondFunctions(){
-        ExtendedFunction func1 = new ExtendedFunction(x -> Math.sqrt(x + 1));
-        func1.setDerivativeFunction(new DerivativeFunction(x ->  1/2d * (1 / Math.sqrt(x + 1))));
-        func1.getDerivativeFunction().setIsInRange(x -> x >= -1);
+    private static void initSecondFunctions() {
+        ExtendedFunction func1 = new ExtendedFunction(x -> Math.pow(x + 1, 1 / 3d));
+        func1.setDerivativeFunction(new DerivativeFunction((x -> 1 / (3d * (Math.pow(x + 1, 2 / 3d))))));
+//        func1.getDerivativeFunction().setIsInRange(x -> x >= -1);
 
-        ExtendedFunction func2 = new ExtendedFunction(x -> Math.pow(x, 2));
+        ExtendedFunction func2 = new ExtendedFunction(x -> Math.pow(x, 2) - 4);
         func2.setDerivativeFunction(new DerivativeFunction(x -> 2 * x));
 
-        createEntry(func1, "x - y^2 = -1", functionList2);
-        createEntry(func2, "y = x^2", functionList2);
+        createEntry(func1, "x - y^3 = -1", functionList2);
+        createEntry(func2, "y = x^2 - 4", functionList2);
 
     }
 
@@ -133,19 +145,19 @@ public class NonLinearSystem implements Command {
             index++;
         }
 
-        int select ;
+        int select;
 
         try {
             select = Integer.parseInt(console.readLine());
             if (select >= (initForFirst ? functionList1 : functionList2).size()) {
                 console.println("Введите правильное значение");
-                return selectFunction( console, initForFirst);
+                return selectFunction(console, initForFirst);
             } else {
                 return select;
             }
         } catch (NumberFormatException e) {
             console.println("Введите правильное значение");
-            return selectFunction( console, initForFirst);
+            return selectFunction(console, initForFirst);
         } catch (IOException e) {
             console.println("[SYSTEM_ERROR] " + e.getMessage());
             console.println("По умолчанию выбрана 0 функция");
