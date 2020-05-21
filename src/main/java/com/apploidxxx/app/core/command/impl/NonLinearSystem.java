@@ -37,7 +37,7 @@ public class NonLinearSystem implements Command {
         double top = readBoundary("Правая граница: ", console);
 
         ExtendedFunction firstFunc = functionList1.get(func1).getValue();
-        System.out.println("BOttom boundary : " + firstFunc.getRepresentation().apply(bottom));
+
         firstFunc.setBoundaries(firstFunc.getRepresentation().apply(bottom), firstFunc.getRepresentation().apply(top));
         firstFunc.getRepresentation().setBoundaries(bottom, top);
         ExtendedFunction secondFunc = functionList2.get(func2).getValue();
@@ -50,7 +50,8 @@ public class NonLinearSystem implements Command {
             double[] answer = solver.nonlinearSystemSolver(List.of(firstFunc, secondFunc), accuracy);
             answers.put(answer[0], answer[1]);
         } catch (IllegalArgumentException e) {
-            console.println("[ERROR] " + e.getMessage());
+            console.println("[ERROR] Метод не сходится");
+            console.println(e.getMessage());
         }
 
         try {
@@ -96,7 +97,10 @@ public class NonLinearSystem implements Command {
         createEntry(func1, "x^3 - y = 1", functionList1);
 
         ExtendedFunction func2 = new ExtendedFunction(y -> Math.pow(y, 3) - 1);
-        func2.setRepresentation(new ExtendedFunction(x -> Math.pow(x + 1, 1 / 3d)));
+        func2.setRepresentation(new ExtendedFunction(x -> {
+            if (x >= -1) return Math.pow(x + 1, 1 / 3d);
+            else return -1 * Math.pow(Math.abs(x) + 1, 1/3d);
+        }));
 //        func2.getRepresentation().setIsInRange(x -> x > 0);
         func2.setDerivativeFunction(new DerivativeFunction(x -> 1 / (3d * (Math.pow(x + 1, 2 / 3d))))); //x -> Math.pow(Math.E, x)));
         createEntry(func2, "x = y^3 - 1", functionList1);
