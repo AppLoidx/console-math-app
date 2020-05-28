@@ -33,7 +33,9 @@ public class GraphPanel extends JPanel {
     private final static Color[] LINE_COLORS = new Color[]{
             new Color(255, 48, 62),
             new Color(48, 172, 255),
-            new Color(200, 48, 255)
+            new Color(200, 48, 255),
+            new Color(216, 255, 0),
+            new Color(0, 19, 141)
     };
 
     private final static Color[] DOT_COLORS = new Color[]{
@@ -365,9 +367,9 @@ public class GraphPanel extends JPanel {
             double add = Math.min(function.getBoundaries()[0], function.getBoundaries()[1]);
             double step = 1d * Math.abs(function.getBoundaries()[0] - function.getBoundaries()[1]) / maxDataPoints;
             final Score score = new Score();
-            for (int i = 0; i < maxDataPoints; i++) {
-                add += step;
+            for (int i = 0; i < maxDataPoints + 1; i++) {
                 score.addScore(Math.round(add * (1d / accuracy)) / (1d / accuracy), function.apply(add));
+                add += step;
             }
             scores.add(score);
         }
