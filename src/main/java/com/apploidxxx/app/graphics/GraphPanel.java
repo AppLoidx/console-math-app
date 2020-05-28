@@ -183,7 +183,7 @@ public class GraphPanel extends JPanel {
         }
     }
 
-    private List<Point> getAllPointsSorted(){
+    private List<Point> getAllPointsSorted() {
         List<Point> sortedList = new ArrayList<>();
         scores.forEach(score -> sortedList.addAll(score.getList()));
         sortedList.sort(Comparator.comparingDouble(Point::getX));
@@ -328,33 +328,52 @@ public class GraphPanel extends JPanel {
 
     }
 
-    public static void drawGraph(ExtendedFunction function, Map<Double, Double> answers, double accuracy) {
-        drawGraph(List.of(function), answers, accuracy);
+    public static void drawGraph(ExtendedFunction function, Map<Double, Double> singleDots, double accuracy) {
+        drawGraph(List.of(function), singleDots, accuracy);
     }
 
-    public static void drawGraph(List<ExtendedFunction> functions, Map<Double, Double> answers, double accuracy) {
-        int maxDataPoints = 100;
+    public static void drawGraph(List<ExtendedFunction> functions, Map<Double, Double> singleDots, double accuracy) {
+        int minDataPoints = 100;
+
+        List<Score> scores = createScoresForFunctions(functions, minDataPoints, accuracy);
+
+        Score singleDotsScore = createSingleDotsScore(singleDots);
+
+        scores.add(singleDotsScore);
+
+        SwingUtilities.invokeLater(() -> createAndShowGui(scores));
+    }
+
+    private static List<Score> createScoresForFunctions(List<ExtendedFunction> functions, int minPoints, double accuracy) {
         List<Score> scores = new ArrayList<>();
         for (ExtendedFunction function : functions) {
+            double[] b = function.getBoundaries();
             double add = Math.min(function.getBoundaries()[0], function.getBoundaries()[1]);
-            double step = 1d * Math.abs(function.getBoundaries()[0] - function.getBoundaries()[1]) / maxDataPoints;
+            minPoints = (int) Math.max(minPoints, Math.abs(b[1] - b[0]));
+            double step = 1d * Math.abs(function.getBoundaries()[0] - function.getBoundaries()[1]) / minPoints;
             final Score score = new Score();
-            for (int i = 0; i < maxDataPoints + 1; i++) {
-                score.addScore(Math.round(add * (1d / accuracy)) / (1d / accuracy), function.apply(add));
+
+            for (int i = 0; i < minPoints + 1; i++) {
+                double x = Math.round(add * (1d / accuracy)) / (1d / accuracy);
+                double y = function.apply(add);
+                score.addScore(x, y);
+
                 add += step;
             }
             scores.add(score);
         }
+
+        return scores;
+    }
+
+    private static Score createSingleDotsScore(Map<Double, Double> singleDots) {
         Score answersScore = new Score();
-        answersScore.setNotInGraph(true);
+        answersScore.setNotInGraph(true);   // don't interpolate
         int colorIndex = 0;
-        for (Double key : answers.keySet()) {
-            answersScore.addScore(key, answers.get(key), true, DOT_COLORS[colorIndex % (DOT_COLORS.length - 1)]);
+        for (Double key : singleDots.keySet()) {
+            answersScore.addScore(key, singleDots.get(key), true, DOT_COLORS[colorIndex % (DOT_COLORS.length - 1)]);
         }
-
-        scores.add(answersScore);
-
-        SwingUtilities.invokeLater(() -> createAndShowGui(scores));
+        return answersScore;
     }
 
 
@@ -364,7 +383,7 @@ public class GraphPanel extends JPanel {
         int y1 = getHeight() - calculateYPaddingToZeroPoint() - (int) ((getHeight() - LABEL_PADDING - 2 * GLOBAL_PADDING) / (getMaxScore() - getMinScore()) * yV + GLOBAL_PADDING + LABEL_PADDING);
         Point point = new Point(x1, y1);
 
-        g2.setColor(DOT_COLORS[(currentDotColor++) % (DOT_COLORS.length - 1) ]);
+        g2.setColor(DOT_COLORS[(currentDotColor++) % (DOT_COLORS.length - 1)]);
 
         int pointW = POINT_WIDTH + 4;
         int x = (int) (point.x - pointW / 2);
