@@ -3,6 +3,7 @@ package com.apploidxxx.app.core.command.impl.util;
 import com.apploidxxx.app.console.Console;
 import core.impl.GaussMatrixSolver;
 import model.Matrix;
+import util.function.ExtendedFunction;
 import util.printer.MatrixPrinter;
 import util.printer.impl.DatabaseLikePrinter;
 import util.printer.impl.SimplePrettyPrinter;
@@ -12,7 +13,59 @@ import java.io.IOException;
 /**
  * @author Arthur Kupriyanov on 05.03.2020
  */
-public class ConsoleUtil {
+public final class ConsoleUtil {
+    private ConsoleUtil(){}
+
+    public static double readDouble(String prompt, Console console) throws IOException {
+        console.println(prompt);
+        try {
+            return Double.parseDouble(console.readLine());
+        } catch (NumberFormatException e) {
+            console.println("Введите правильное число");
+            return readDouble(prompt, console);
+        }
+    }
+
+    public static int readInt(Console console) throws IOException {
+        try {
+            return Integer.parseInt(console.readLine());
+        } catch (NumberFormatException e) {
+            console.println("Введите цело число в области значений int");
+            return readInt(console);
+        }
+    }
+
+    /**
+     *
+     * @param console with out
+     * @param minValue min value (include)
+     * @param maxValue max value (include)
+     * @return user's int
+     */
+    public static int readInt(Console console, int minValue, int maxValue) throws IOException {
+        int numb = readInt(console);
+        if (numb <= maxValue && numb >= minValue) {
+            return numb;
+        } else {
+            console.println(String.format("Введите значение удовлетворяющее %d < x < %d", minValue, maxValue));
+            return readInt(console, minValue, maxValue);
+        }
+    }
+
+
+    public static double[] readBoundaries(Console console) throws IOException {
+        double[] boundaries = new double[2];
+        boundaries[0] = readDouble("\nВведите нижнюю границу:", console);
+        boundaries[1] = readDouble("\nВведите верхнюю границу:", console);
+
+        if (boundaries[0] == boundaries[1]) {
+            console.println("Вы ввели одинаковые значения для области. Возможно, вы ошиблись при вводе");
+            return readBoundaries(console);
+        }
+
+        return boundaries;
+    }
+
     public static void printLine(Console console){
         String line = "_".repeat(console.getSize());
         console.println(line);
