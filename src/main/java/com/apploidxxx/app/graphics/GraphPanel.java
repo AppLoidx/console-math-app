@@ -328,34 +328,6 @@ public class GraphPanel extends JPanel {
 
     }
 
-    public static void main(String[] args) {
-        int maxDataPoints = 100;
-//        Function<Double, Double> func = x -> Math.pow(x, 2) - x - 5;
-        Function<Double, Double> func = Math::sin;
-        double add = -6d;
-
-        final Score score = new Score();
-
-        for (int i = 0; i < maxDataPoints; i++) {
-            add += 0.1d;
-            score.addScore(Math.round(add * 100d) / 100d, func.apply(add));
-        }
-        Function<Double, Double> func2 = Math::cos;
-        final Score score2 = new Score();
-        add = -6d;
-        for (int i = 0; i < maxDataPoints; i++) {
-            add += 0.1d;
-            score2.addScore(Math.round(add * 100d) / 100d, func2.apply(add));
-        }
-        Function<Double, Double> func3 = x -> 5 * Math.pow(x, 2);
-
-        Score score1 = new Score();
-        score1.addScore(0d, 0d, true, Color.GREEN);
-        score1.addScore(1d, 1d, true, Color.GREEN);
-        score1.setNotInGraph(true);
-        SwingUtilities.invokeLater(() -> createAndShowGui(List.of(score, score1, score2)));
-    }
-
     public static void drawGraph(ExtendedFunction function, Map<Double, Double> answers, double accuracy) {
         drawGraph(List.of(function), answers, accuracy);
     }
