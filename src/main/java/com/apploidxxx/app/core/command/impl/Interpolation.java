@@ -12,7 +12,10 @@ import util.function.ExtendedFunction;
 import util.function.SimpleDot;
 import util.function.interfaces.Dot;
 
-import java.util.*;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Random;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -38,13 +41,77 @@ public class Interpolation implements Command {
         ExtendedFunction extFunc = extendFunction(selectFunction.func, boundaries);
 
         List<Dot> dots = generatePointsFrom(selectFunction.func, boundaries, 15);
-        // todo: mutate dots handle
-        dots.set(4, new SimpleDot(dots.get(4).getX(),dots.get(4).getY() - 0.2));
 
         Interpolator interpolator = new NewtonInterpolator();
-        ExtendedFunction interpolation  = interpolator.interpolate(dots);
+        ExtendedFunction interpolation = interpolator.interpolate(dots);
         interpolation.setBoundaries(boundaries[0], boundaries[1]);
         GraphPanel.drawGraph(List.of(extFunc, interpolation), createDotsMap(dots), 0.0001d);
+
+        startLoop(console, dots, extFunc, interpolation);
+
+    }
+
+    @SneakyThrows
+    private void startLoop(Console console, List<Dot> dots, final ExtendedFunction mainFunc, ExtendedFunction oldFunc) {
+        while (true) {
+            console.println("Выберите действие:");
+            console.println("[0] Изменить координаты точки");
+            console.println("[1] Найти Y для пользовательского X");
+            console.println("[2] Выход");
+
+            int choice = ConsoleUtil.readInt(console, 0 , 2);
+            switch (choice) {
+                case 0 : {
+                    ExtendedFunction inter = mutateDotInterface(console, dots);
+                    inter.setBoundaries(mainFunc.getBoundaries()[0], mainFunc.getBoundaries()[1]);
+                    GraphPanel.drawGraph(List.of(mainFunc, oldFunc, inter), createDotsMap(dots), 0.0001d);
+                    oldFunc = inter;
+                    break;
+                }
+
+                case 1 : calculateX(console, oldFunc); break;
+                case 2 : return;
+            }
+        }
+
+
+
+    }
+
+    @SneakyThrows
+    private void calculateX(Console console, ExtendedFunction interpolationFunc) {
+        double x = ConsoleUtil.readDouble("Введите значение X = ", console);
+        console.println(String.format("f(%f) = %f",  x, interpolationFunc.apply(x)));
+    }
+
+    @SneakyThrows
+    private ExtendedFunction mutateDotInterface(Console console, List<Dot> dots) {
+        console.println("Выберите точку для изменения координаты Y");
+        for (int i = 0; i < dots.size(); i++) {
+            console.println(String.format("[%d] x = %f, y = %f", i, dots.get(i).getX(), dots.get(i).getY()));
+        }
+        int choice = ConsoleUtil.readInt(console, 0 , dots.size() - 1);
+        return mutateDot(console, choice, dots);
+    }
+
+    @SneakyThrows
+    private ExtendedFunction mutateDot(Console console, int index, List<Dot> dots ) {
+        Dot d = dots.get(index);
+        console.print(String.format("x = %f, y = ", d.getX()));
+        String userInput = console.readLine();
+        double val;
+        try {
+            val = Double.parseDouble(userInput);
+        } catch (NumberFormatException e) {
+            console.println("\nВведите правильное значение для y");
+            return mutateDot(console, index, dots);
+        }
+
+        dots.set(index, new SimpleDot(d.getX(), val));
+        console.println("");
+
+        ExtendedFunction interpolation = new NewtonInterpolator().interpolate(dots);
+        return interpolation;
     }
 
     private ExtendedFunction extendFunction(Function<Double, Double> function, double[] boundaries) {
@@ -54,7 +121,7 @@ public class Interpolation implements Command {
     }
 
     @SneakyThrows
-    public SelectFunction selectFunction(Console console){
+    public SelectFunction selectFunction(Console console) {
         console.println("Выберите функцию");
         for (int i = 0; i < FUNCTIONS.length; i++) {
             console.println(String.format("[%d] %s", i, FUNCTIONS[i].name));
@@ -64,7 +131,7 @@ public class Interpolation implements Command {
     }
 
     private Map<Double, Double> createDotsMap(List<Dot> dots) {
-       return dots.stream().collect(Collectors.toMap(Dot::getX, Dot::getY, (a, b) -> b));
+        return dots.stream().collect(Collectors.toMap(Dot::getX, Dot::getY, (a, b) -> b));
     }
 
     private List<Dot> generatePointsFrom(Function<Double, Double> function, double[] boundaries, int amount) {
