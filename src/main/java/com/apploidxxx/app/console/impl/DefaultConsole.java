@@ -21,8 +21,6 @@ import java.io.PrintStream;
  * @author Arthur Kupriyanov on 18.02.2020
  */
 public class DefaultConsole implements Console {
-    private static final int SPACE_CODE = 32;
-    private static final int NEWLINE_CODE = 10;
     private final PrintStream out;
     private final Terminal terminal;
 
@@ -36,7 +34,7 @@ public class DefaultConsole implements Console {
     }
 
     @Override
-    public String readLine() throws IOException {
+    public String readLine() {
         LineReader reader = LineReaderBuilder.builder()
                 .terminal(terminal)
                 .variable(LineReader.SECONDARY_PROMPT_PATTERN, "> ")
@@ -69,7 +67,7 @@ public class DefaultConsole implements Console {
     }
 
     @Override
-    public String readPath() throws IOException {
+    public String readPath() {
         Completers.FileNameCompleter filesCompleter = new Completers.FileNameCompleter();
         LineReader reader = LineReaderBuilder.builder()
                 .terminal(terminal)
