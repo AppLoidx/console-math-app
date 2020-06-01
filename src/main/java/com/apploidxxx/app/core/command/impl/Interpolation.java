@@ -3,6 +3,7 @@ package com.apploidxxx.app.core.command.impl;
 import com.apploidxxx.app.console.Console;
 import com.apploidxxx.app.core.command.Command;
 import com.apploidxxx.app.core.command.impl.util.ConsoleUtil;
+import com.apploidxxx.app.core.command.impl.util.SelectFunction;
 import com.apploidxxx.app.core.command.stereotype.Executable;
 import com.apploidxxx.app.graphics.GraphPanel;
 import core.Interpolator;
@@ -12,10 +13,7 @@ import util.function.ExtendedFunction;
 import util.function.SimpleDot;
 import util.function.interfaces.Dot;
 
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -24,23 +22,23 @@ import java.util.stream.Collectors;
  */
 @Executable(value = "interpolation", aliases = {"1"})
 public class Interpolation implements Command {
-    private static final Random RANDOM = new Random();
 
-    private static final SelectFunction[] FUNCTIONS = new SelectFunction[]
-            {
-                    new SelectFunction(Math::sin, "sin(x)"),
-                    new SelectFunction(x -> x * x - 2 * x - 3, "x^2 - 2x - 3"),
-                    new SelectFunction(x -> x * x * x - 6 * x * x, "x^3 - 6x^2")
-            };
+    private static final List<SelectFunction<Function<Double, Double>>> FUNCTIONS = new ArrayList<>();
+
+    static {
+        FUNCTIONS.add(new SelectFunction<>("sin(x)", Math::sin));
+        FUNCTIONS.add(new SelectFunction<>("x^2 - 2x - 3", x -> x * x - 2 * x - 3));
+        FUNCTIONS.add(new SelectFunction<>("x^3 - 6x^2", x -> x * x * x - 6 * x * x));
+    }
 
     @Override
     public void execute(Console console, String context) throws Exception {
-        SelectFunction selectFunction = selectFunction(console);
+        SelectFunction<Function<Double, Double>> selectFunction = ConsoleUtil.selectFunction(console, FUNCTIONS);
         double[] boundaries = ConsoleUtil.readBoundaries(console);
 
-        ExtendedFunction extFunc = extendFunction(selectFunction.func, boundaries);
+        ExtendedFunction extFunc = extendFunction(selectFunction.getFunc(), boundaries);
 
-        List<Dot> dots = generatePointsFrom(selectFunction.func, boundaries, 15);
+        List<Dot> dots = generatePointsFrom(selectFunction.getFunc(), boundaries);
 
         Interpolator interpolator = new NewtonInterpolator();
         ExtendedFunction interpolation = interpolator.interpolate(dots);
@@ -59,9 +57,9 @@ public class Interpolation implements Command {
             console.println("[1] Найти Y для пользовательского X");
             console.println("[2] Выход");
 
-            int choice = ConsoleUtil.readInt(console, 0 , 2);
+            int choice = ConsoleUtil.readInt(console, 0, 2);
             switch (choice) {
-                case 0 : {
+                case 0: {
                     ExtendedFunction inter = mutateDotInterface(console, dots);
                     inter.setBoundaries(mainFunc.getBoundaries()[0], mainFunc.getBoundaries()[1]);
                     GraphPanel.drawGraph(List.of(mainFunc, oldFunc, inter), createDotsMap(dots), 0.0001d);
@@ -69,11 +67,13 @@ public class Interpolation implements Command {
                     break;
                 }
 
-                case 1 : calculateX(console, oldFunc); break;
-                case 2 : return;
+                case 1:
+                    calculateX(console, oldFunc);
+                    break;
+                case 2:
+                    return;
             }
         }
-
 
 
     }
@@ -81,7 +81,7 @@ public class Interpolation implements Command {
     @SneakyThrows
     private void calculateX(Console console, ExtendedFunction interpolationFunc) {
         double x = ConsoleUtil.readDouble("Введите значение X = ", console);
-        console.println(String.format("f(%f) = %f",  x, interpolationFunc.apply(x)));
+        console.println(String.format("f(%f) = %f", x, interpolationFunc.apply(x)));
     }
 
     @SneakyThrows
@@ -90,12 +90,12 @@ public class Interpolation implements Command {
         for (int i = 0; i < dots.size(); i++) {
             console.println(String.format("[%d] x = %f, y = %f", i, dots.get(i).getX(), dots.get(i).getY()));
         }
-        int choice = ConsoleUtil.readInt(console, 0 , dots.size() - 1);
+        int choice = ConsoleUtil.readInt(console, 0, dots.size() - 1);
         return mutateDot(console, choice, dots);
     }
 
     @SneakyThrows
-    private ExtendedFunction mutateDot(Console console, int index, List<Dot> dots ) {
+    private ExtendedFunction mutateDot(Console console, int index, List<Dot> dots) {
         Dot d = dots.get(index);
         console.print(String.format("x = %f, y = ", d.getX()));
         String userInput = console.readLine();
@@ -110,8 +110,7 @@ public class Interpolation implements Command {
         dots.set(index, new SimpleDot(d.getX(), val));
         console.println("");
 
-        ExtendedFunction interpolation = new NewtonInterpolator().interpolate(dots);
-        return interpolation;
+        return new NewtonInterpolator().interpolate(dots);
     }
 
     private ExtendedFunction extendFunction(Function<Double, Double> function, double[] boundaries) {
@@ -120,24 +119,14 @@ public class Interpolation implements Command {
         return extFunc;
     }
 
-    @SneakyThrows
-    public SelectFunction selectFunction(Console console) {
-        console.println("Выберите функцию");
-        for (int i = 0; i < FUNCTIONS.length; i++) {
-            console.println(String.format("[%d] %s", i, FUNCTIONS[i].name));
-        }
-        int function = ConsoleUtil.readInt(console, 0, FUNCTIONS.length - 1);
-        return FUNCTIONS[function];
-    }
-
     private Map<Double, Double> createDotsMap(List<Dot> dots) {
         return dots.stream().collect(Collectors.toMap(Dot::getX, Dot::getY, (a, b) -> b));
     }
 
-    private List<Dot> generatePointsFrom(Function<Double, Double> function, double[] boundaries, int amount) {
+    private List<Dot> generatePointsFrom(Function<Double, Double> function, double[] boundaries) {
         double width = Math.abs(boundaries[0] - boundaries[1]);
         double start = Math.min(boundaries[0], boundaries[1]);
-        double step = width / amount;
+        double step = width / 15;   // inline parameter of dots amount
         List<Dot> pointList = new LinkedList<>();
         while (width > 0) {
             pointList.add(new SimpleDot(start, function.apply(start)));
@@ -148,15 +137,4 @@ public class Interpolation implements Command {
         return pointList;
     }
 
-    private static class SelectFunction {
-
-        public final Function<Double, Double> func;
-        public final String name;
-
-        private SelectFunction(Function<Double, Double> func, String name) {
-            this.func = func;
-            this.name = name;
-        }
-
-    }
 }
