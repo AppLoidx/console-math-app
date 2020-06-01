@@ -42,7 +42,7 @@ public class MatrixRandom implements Command {
         matrix.init(randMatrix);
 
         GaussMatrixSolver solver = new GaussMatrixSolver(matrix);
-        ConsoleUtil.printSolution(matrix, solver, console);
+        ConsoleUtil.printMatrixSolution(matrix, solver, console);
     }
 
     private static class RandomizerUtil {

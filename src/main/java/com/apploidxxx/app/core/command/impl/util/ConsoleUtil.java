@@ -3,18 +3,20 @@ package com.apploidxxx.app.core.command.impl.util;
 import com.apploidxxx.app.console.Console;
 import core.impl.GaussMatrixSolver;
 import model.Matrix;
-import util.function.ExtendedFunction;
 import util.printer.MatrixPrinter;
 import util.printer.impl.DatabaseLikePrinter;
 import util.printer.impl.SimplePrettyPrinter;
 
 import java.io.IOException;
+import java.util.List;
+import java.util.stream.IntStream;
 
 /**
  * @author Arthur Kupriyanov on 05.03.2020
  */
 public final class ConsoleUtil {
-    private ConsoleUtil(){}
+    private ConsoleUtil() {
+    }
 
     public static double readDouble(String prompt, Console console) throws IOException {
         console.println(prompt);
@@ -36,8 +38,7 @@ public final class ConsoleUtil {
     }
 
     /**
-     *
-     * @param console with out
+     * @param console  with out
      * @param minValue min value (include)
      * @param maxValue max value (include)
      * @return user's int
@@ -52,7 +53,13 @@ public final class ConsoleUtil {
         }
     }
 
-
+    /**
+     * Reads two boundaries of function
+     *
+     * @param console IO interface
+     * @return array of bounds [first, second]
+     * @throws IOException IOException
+     */
     public static double[] readBoundaries(Console console) throws IOException {
         double[] boundaries = new double[2];
         boundaries[0] = readDouble("\nВведите нижнюю границу:", console);
@@ -66,12 +73,21 @@ public final class ConsoleUtil {
         return boundaries;
     }
 
-    public static void printLine(Console console){
+    public static void printLine(Console console) {
         String line = "_".repeat(console.getSize());
         console.println(line);
     }
 
-    public static void printSolution(Matrix matrix, GaussMatrixSolver solver, Console console) throws Exception {
+    public static <T> SelectFunction<T> selectFunction(Console console, List<SelectFunction<T>> functions) throws IOException {
+        console.println("Выберите функцию");
+        IntStream.range(0, functions.size())
+                .mapToObj(i -> String.format("[%d] %s", i, functions.get(i).getName()))
+                .forEachOrdered(console::println);
+        int function = ConsoleUtil.readInt(console, 0, functions.size() - 1);
+        return functions.get(function);
+    }
+
+    public static void printMatrixSolution(Matrix matrix, GaussMatrixSolver solver, Console console) throws Exception {
 
 
         console.println("В каком формате хотите вывести матрицу" +
@@ -116,16 +132,17 @@ public final class ConsoleUtil {
         return value;
     }
 
-    private static void printVariables(float[] vars, Console console){
+    private static void printVariables(float[] vars, Console console) {
         int index = 1;
-        for (float val : vars){
+        for (float val : vars) {
             console.print(String.format("x%d: %f, ", index, val));
             index++;
         }
     }
-    private static void printResidual(float[] vars, Console console){
 
-        for (float val : vars){
+    private static void printResidual(float[] vars, Console console) {
+
+        for (float val : vars) {
             console.print(String.format("%e, ", val));
         }
     }

@@ -24,7 +24,7 @@ public class Matrix implements Command {
             return;
         }
         GaussMatrixSolver solver = new GaussMatrixSolver(matrix);
-        ConsoleUtil.printSolution(matrix, solver, console);
+        ConsoleUtil.printMatrixSolution(matrix, solver, console);
 
     }
 

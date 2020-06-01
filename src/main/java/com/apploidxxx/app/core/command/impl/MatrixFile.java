@@ -48,7 +48,7 @@ public class MatrixFile implements Command {
                 return;
             }
             GaussMatrixSolver solver = new GaussMatrixSolver(matrix);
-            ConsoleUtil.printSolution(matrix, solver, console);
+            ConsoleUtil.printMatrixSolution(matrix, solver, console);
         } catch (FileNotFoundException e) {
             console.println("Файл с таким именем не найден\nНажмите любую клавишу для продолжения...");
             console.readLine();
