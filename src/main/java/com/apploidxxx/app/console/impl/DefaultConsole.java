@@ -15,6 +15,9 @@ import java.io.InputStream;
 import java.io.PrintStream;
 
 /**
+ *
+ * Works only in bash (not work in idea console)
+ *
  * @author Arthur Kupriyanov on 18.02.2020
  */
 public class DefaultConsole implements Console {
