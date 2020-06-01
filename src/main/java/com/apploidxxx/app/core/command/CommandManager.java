@@ -1,5 +1,6 @@
 package com.apploidxxx.app.core.command;
 
+import com.apploidxxx.app.console.Console;
 import com.apploidxxx.app.core.command.stereotype.Executable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,21 +27,7 @@ public class CommandManager {
     }
 
     private Command findByName(String name) {
-        if (name.equals("help")) {
-            return ((console, context) -> {
-                for (List<String> names : commandMap.keySet()) {
-
-                    console.print("\n* " + names.get(0));
-                    if (names.size() > 1) {
-                        console.print(" [ ");
-                        for (int i = 1; i < names.size(); i++) {
-                            console.print(" " + names.get(i) + (i != names.size() - 1 ? " ," : ""));
-                        }
-                        console.print(" ]");
-                    }
-                }
-            });
-        }
+        if (name.equals("help")) return this::helpCommand;
 
         for (List<String> keys : commandMap.keySet()) {
             if (keys.contains(name)) return commandMap.get(keys);
@@ -114,5 +101,20 @@ public class CommandManager {
             }
         }
         return implemented;
+    }
+
+    private void helpCommand(Console console, String context) {
+        for (List<String> names : commandMap.keySet()) {
+
+            console.print("\n* " + names.get(0));
+            if (names.size() > 1) {
+                console.print(" [");
+                for (int i = 1; i < names.size(); i++) {
+                    console.print(" " + names.get(i) + (i != names.size() - 1 ? " ," : ""));
+                }
+                console.print(" ]");
+            }
+        }
+        console.println("");
     }
 }
