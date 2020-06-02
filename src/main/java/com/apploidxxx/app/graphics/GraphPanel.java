@@ -130,7 +130,6 @@ public class GraphPanel extends JPanel {
             int y1 = (int) ((getMaxScore() - p.getY()) * yScale + GLOBAL_PADDING);
             graphPoints.add(new com.apploidxxx.app.graphics.Point(x1, y1));
             index++;
-
         }
 
         return graphPoints;
@@ -168,6 +167,7 @@ public class GraphPanel extends JPanel {
             if (graphSize() > 1) {
                 int x0 = i * (getWidth() - GLOBAL_PADDING * 2 - LABEL_PADDING) / (graphSize() - 1) + GLOBAL_PADDING + LABEL_PADDING;
                 int y0 = getHeight() - GLOBAL_PADDING - LABEL_PADDING;
+
                 int y1 = y0 - POINT_WIDTH;
                 if ((i % ((int) ((graphSize() / xLabelSize)) + 1)) == 0) {
 
@@ -194,10 +194,7 @@ public class GraphPanel extends JPanel {
         List<Point> score = getAllPointsSorted();
         double xMax = score.get(graphSize() - 1).getX();
         double xMin = score.get(0).getX();
-//        if (xMax >= 0 && xMin < 0) {
         return (int) ((getWidth() - GLOBAL_PADDING * 2 - LABEL_PADDING) / (xMax - xMin) * (0 - xMin));
-//        }
-//        return 0;
     }
 
     private int calculateYPaddingToZeroPoint() {
@@ -219,7 +216,6 @@ public class GraphPanel extends JPanel {
     private void drawGraph(Graphics2D g2, List<List<Point>> graphPoints) {
         int index = 0;
         for (List<Point> graph : graphPoints) {
-
             g2.setColor(getLineColor(index));
             g2.setStroke(GRAPH_STROKE);
             for (int i = 0; i < graph.size() - 1; i++) {
@@ -330,15 +326,16 @@ public class GraphPanel extends JPanel {
 
     public static void drawGraph(List<ExtendedFunction> functions, Map<Double, Double> singleDots, double accuracy) {
         int minDataPoints = 100;
-
         List<Score> scores = createScoresForFunctions(functions, minDataPoints, accuracy);
+        scores.add(createSingleDotsScore(singleDots));
+        drawGraph(scores);
+    }
 
-        Score singleDotsScore = createSingleDotsScore(singleDots);
-
-        scores.add(singleDotsScore);
-
+    public static void drawGraph(List<Score> scores) {
+        scores.forEach(Score::sort);
         SwingUtilities.invokeLater(() -> createAndShowGui(scores));
     }
+
 
     private static List<Score> createScoresForFunctions(List<ExtendedFunction> functions, int minPoints, double accuracy) {
         List<Score> scores = new ArrayList<>();
@@ -348,10 +345,10 @@ public class GraphPanel extends JPanel {
             minPoints = (int) Math.max(minPoints, Math.abs(b[1] - b[0]));
             double step = 1d * Math.abs(function.getBoundaries()[0] - function.getBoundaries()[1]) / minPoints;
             final Score score = new Score();
-
             for (int i = 0; i < minPoints + 1; i++) {
                 double x = Math.round(add * (1d / accuracy)) / (1d / accuracy);
                 double y = function.apply(add);
+
                 score.addScore(x, y);
 
                 add += step;
@@ -362,7 +359,7 @@ public class GraphPanel extends JPanel {
         return scores;
     }
 
-    private static Score createSingleDotsScore(Map<Double, Double> singleDots) {
+    public static Score createSingleDotsScore(Map<Double, Double> singleDots) {
         Score answersScore = new Score();
         answersScore.setNotInGraph(true);   // don't interpolate
         int colorIndex = 0;
@@ -375,18 +372,23 @@ public class GraphPanel extends JPanel {
 
     public void drawOneDot(Graphics2D g2, Double xV, Double yV) {
         List<Point> score = getAllPointsSorted();
+
         int x1 = calculateXPaddingToZeroPoint() + (int) (((getWidth() - LABEL_PADDING - 2 * GLOBAL_PADDING) / (score.get(graphSize() - 1).getX() - score.get(0).getX())) * xV + LABEL_PADDING + GLOBAL_PADDING);
         int y1 = getHeight() - calculateYPaddingToZeroPoint() - (int) ((getHeight() - LABEL_PADDING - 2 * GLOBAL_PADDING) / (getMaxScore() - getMinScore()) * yV + GLOBAL_PADDING + LABEL_PADDING);
         Point point = new Point(x1, y1);
 
         g2.setColor(DOT_COLORS[(currentDotColor++) % (DOT_COLORS.length - 1)]);
 
-        int pointW = POINT_WIDTH + 4;
+        int pointW = POINT_WIDTH + 1;
         int x = (int) (point.x - pointW / 2);
         int y = (int) (point.y - pointW / 2);
         g2.fillOval(x, y, pointW, pointW);
         g2.setColor(LABEL_COLOR);
-        g2.drawString("x=" + DoubleUtil.round(xV, 0.0001d) + ", y=" + DoubleUtil.round(yV, 0.01d), x, y + g2.getFontMetrics().getHeight() + 5);
+        int allocatedLengthForLabel = 80;
+        int paddingY = (getHeight() / 2 > y1 ? 1 : -1) * (g2.getFontMetrics().getHeight() + 5);
+        int paddingX = allocatedLengthForLabel - (getWidth() - x);
+        paddingX = Math.max(paddingX, 0);
+        g2.drawString("x=" + DoubleUtil.round(xV, 0.0001d) + ", y=" + DoubleUtil.round(yV, 0.01d), x - paddingX, y + paddingY);
 
     }
 
