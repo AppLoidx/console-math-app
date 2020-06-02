@@ -270,7 +270,7 @@ public class GraphPanel extends JPanel {
         currentPosX = xZeroPointPos;
         while (currentPosX < getWidth() - GLOBAL_PADDING) {
             g2.drawLine(currentPosX, getHeight() - GLOBAL_PADDING - LABEL_PADDING, currentPosX, GLOBAL_PADDING);
-            currentPosX += GRID_WIDTH;
+            currentPosX = (int) (currentPosX + GRID_WIDTH);
         }
 
         final int yZeroPointPos = getHeight() - GLOBAL_PADDING - LABEL_PADDING + paddingY;
