@@ -51,6 +51,10 @@ public class Score implements Iterable<Point>{
         return scores.stream().sorted(Comparator.comparingDouble(Point::getX)).collect(Collectors.toList());
     }
 
+    public void sort() {
+        scores.sort(Comparator.comparingDouble(Point::getX));
+    }
+
     public int graphSize(){
         return scores.size();
     }
