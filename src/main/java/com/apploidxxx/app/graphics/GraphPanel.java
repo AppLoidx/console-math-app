@@ -2,12 +2,13 @@ package com.apploidxxx.app.graphics;
 
 import util.DoubleUtil;
 import util.function.ExtendedFunction;
+import util.function.interfaces.Dot;
 
 import javax.swing.*;
 import java.awt.*;
 import java.util.List;
 import java.util.*;
-import java.util.function.Function;
+import java.util.stream.Collectors;
 
 //import java.awt.Point;
 
@@ -17,8 +18,6 @@ import java.util.function.Function;
  */
 public class GraphPanel extends JPanel {
 
-    private final static Color LINE_COLOR = new Color(255, 48, 62);
-    private final static Color POINT_COLOR = new Color(255, 48, 62);
     private final static Color GRID_COLOR = new Color(74, 74, 74, 200);
     private final static Color BACKGROUND_COLOR = new Color(28, 28, 28);
     private final static Color LABEL_COLOR = Color.GRAY;
@@ -394,4 +393,7 @@ public class GraphPanel extends JPanel {
 
     }
 
+    public static Map<Double, Double> createDotsMap(List<Dot> dots) {
+        return dots.stream().collect(Collectors.toMap(Dot::getX, Dot::getY, (a, b) -> b));
+    }
 }
