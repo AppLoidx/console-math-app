@@ -2,6 +2,7 @@ package com.apploidxxx.app.core.command.impl.util;
 
 import com.apploidxxx.app.console.Console;
 import core.impl.GaussMatrixSolver;
+import lombok.SneakyThrows;
 import model.Matrix;
 import util.printer.MatrixPrinter;
 import util.printer.impl.DatabaseLikePrinter;
@@ -18,8 +19,9 @@ public final class ConsoleUtil {
     private ConsoleUtil() {
     }
 
-    public static double readDouble(String prompt, Console console) throws IOException {
-        console.println(prompt);
+    @SneakyThrows
+    public static double readDouble(String prompt, Console console) {
+        console.print(prompt);
         try {
             return Double.parseDouble(console.readLine());
         } catch (NumberFormatException e) {
