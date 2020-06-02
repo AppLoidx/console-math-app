@@ -49,7 +49,6 @@ public class CommandManager {
                 logger.error("Command class not found", e);
             }
         }
-
     }
 
     private void processBean(BeanDefinition bd) throws ClassNotFoundException {

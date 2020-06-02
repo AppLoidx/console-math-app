@@ -13,9 +13,10 @@ import util.function.ExtendedFunction;
 import util.function.SimpleDot;
 import util.function.interfaces.Dot;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.function.Function;
-import java.util.stream.Collectors;
 
 /**
  * @author Arthur Kupriyanov on 21.05.2020
@@ -43,7 +44,7 @@ public class Interpolation implements Command {
         Interpolator interpolator = new NewtonInterpolator();
         ExtendedFunction interpolation = interpolator.interpolate(dots);
         interpolation.setBoundaries(boundaries[0], boundaries[1]);
-        GraphPanel.drawGraph(List.of(extFunc, interpolation), createDotsMap(dots), 0.0001d);
+        GraphPanel.drawGraph(List.of(extFunc, interpolation), GraphPanel.createDotsMap(dots), 0.0001d);
 
         startLoop(console, dots, extFunc, interpolation);
 
@@ -62,7 +63,7 @@ public class Interpolation implements Command {
                 case 0: {
                     ExtendedFunction inter = mutateDotInterface(console, dots);
                     inter.setBoundaries(mainFunc.getBoundaries()[0], mainFunc.getBoundaries()[1]);
-                    GraphPanel.drawGraph(List.of(mainFunc, oldFunc, inter), createDotsMap(dots), 0.0001d);
+                    GraphPanel.drawGraph(List.of(mainFunc, oldFunc, inter), GraphPanel.createDotsMap(dots), 0.0001d);
                     oldFunc = inter;
                     break;
                 }
@@ -117,10 +118,6 @@ public class Interpolation implements Command {
         ExtendedFunction extFunc = new ExtendedFunction(function);
         extFunc.setBoundaries(Math.min(boundaries[0], boundaries[1]), Math.max(boundaries[0], boundaries[1]));
         return extFunc;
-    }
-
-    private Map<Double, Double> createDotsMap(List<Dot> dots) {
-        return dots.stream().collect(Collectors.toMap(Dot::getX, Dot::getY, (a, b) -> b));
     }
 
     private List<Dot> generatePointsFrom(Function<Double, Double> function, double[] boundaries) {
