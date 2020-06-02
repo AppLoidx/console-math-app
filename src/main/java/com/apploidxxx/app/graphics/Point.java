@@ -51,4 +51,12 @@ public class Point extends java.awt.Point {
     public Color getColor() {
         return color;
     }
+
+    @Override
+    public String toString() {
+        return "Point{" +
+               "x=" + x +
+               ", y=" + y +
+               '}';
+    }
 }
