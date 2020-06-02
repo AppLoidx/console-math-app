@@ -204,11 +204,8 @@ public class GraphPanel extends JPanel {
         double yMax = getMaxScore();
         double yMin = getMinScore();
 
-        if (yMax >= 0 && yMin < 0) {
-            return (int) ((getHeight() - GLOBAL_PADDING * 2 - LABEL_PADDING) / (yMax - yMin) * (0 - yMin));
-        }
+        return (int) ((getHeight() - GLOBAL_PADDING * 2 - LABEL_PADDING) / (yMax - yMin) * (0 - yMin));
 
-        return 0;
     }
 
     private void drawAxis(Graphics2D g2, int paddingX, int paddingY) {
