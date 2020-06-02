@@ -6,6 +6,7 @@ import com.apploidxxx.app.core.command.impl.util.ConsoleUtil;
 import com.apploidxxx.app.core.command.impl.util.SelectFunction;
 import com.apploidxxx.app.core.command.stereotype.Executable;
 import com.apploidxxx.app.graphics.GraphPanel;
+import com.apploidxxx.app.graphics.Score;
 import core.DiffEquationSolver;
 import core.Interpolator;
 import core.impl.ImprovedEulerDiffEquationSolver;
@@ -14,6 +15,8 @@ import util.function.DiffEquation;
 import util.function.ExtendedFunction;
 import util.function.interfaces.Dot;
 
+import java.awt.*;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -24,23 +27,43 @@ import java.util.List;
 public class DiffEquationCommand implements Command {
     private static final DiffEquationSolver SOLVER = new ImprovedEulerDiffEquationSolver();
     private static final Interpolator INTERPOLATOR = new NewtonInterpolator();
-    private final List<SelectFunction<DiffEquation>> equations = new ArrayList<>();
+    private static final List<SelectFunction<DiffEquation>> equations = new ArrayList<>();
 
-    {
+    static {
         initFunctions();
     }
 
 
     @Override
     public void execute(Console console, String context) throws Exception {
+
+        List<Dot> dots = calculateDotsFromConsoleInput(console);
+        ExtendedFunction interpolatedFunc = interpolateDots(dots);
+
+        double interpolatedYValue = interpolatedFunc.apply(0d);
+
+        Score score = new Score();
+
+        for (Dot d : dots) {
+            score.addScore(d.getX(), d.getY());
+        }
+
+        score.addScore(0d, interpolatedYValue, true, Color.RED);
+        GraphPanel.drawGraph(List.of(score));
+        console.println("Interpolation result : " + interpolatedYValue);
+    }
+
+    private ExtendedFunction interpolateDots(List<Dot> dots) {
+        ExtendedFunction interpolatedFunc = INTERPOLATOR.interpolate(dots);
+        interpolatedFunc.setBoundaries(createBoundariesForInterpolationFunc(selectAbsMax(dots.get(0).getX(), dots.get(dots.size() - 1).getX())));
+        return interpolatedFunc;
+    }
+
+    private List<Dot> calculateDotsFromConsoleInput(Console console) throws IOException {
         SelectFunction<DiffEquation> selectedFunc = ConsoleUtil.selectFunction(console, equations);
         double[] startValues = readStartValues(console);
-        List<Dot> dots = SOLVER.solve(selectedFunc.getFunc(), startValues[0], startValues[1]);
-        ExtendedFunction interpolatedFunc = INTERPOLATOR.interpolate(dots);
-        double interpolatedSolution = interpolatedFunc.apply(0d);
-        interpolatedFunc.setBoundaries(createBoundariesForInterpolationFunc(selectAbsMax(dots.get(0).getX(), dots.get(dots.size() - 1).getX())));
-        GraphPanel.drawGraph(interpolatedFunc, GraphPanel.createDotsMap(dots), 0.001d);
-        console.println("Interpolation result : " + interpolatedSolution);
+        double accuracy = ConsoleUtil.readDouble("Введите точность вычисляемого значения: ", console);
+        return SOLVER.solve(selectedFunc.getFunc(), startValues[0], startValues[1], accuracy);
     }
 
     private double[] createBoundariesForInterpolationFunc(double x0) {
@@ -52,13 +75,13 @@ public class DiffEquationCommand implements Command {
     }
 
 
-    private void initFunctions() {
+    private static void initFunctions() {
 
         DiffEquation function1 = new DiffEquation((x, y) -> y + (1 + x) * y * y);
-        equations.add(createEquation("y' = y + (1 + x) * y^2", function1));
+        DiffEquationCommand.equations.add(createEquation("y' = y + (1 + x) * y^2", function1));
 
         DiffEquation function2 = new DiffEquation((x, y) -> x - y);
-        equations.add(createEquation("y' = x - y", function2));
+        DiffEquationCommand.equations.add(createEquation("y' = x - y", function2));
     }
 
     private double[] readStartValues(Console console) {
@@ -68,7 +91,7 @@ public class DiffEquationCommand implements Command {
         return new double[]{x0, y0};
     }
 
-    private SelectFunction<DiffEquation> createEquation(String name, DiffEquation equation) {
+    private static SelectFunction<DiffEquation> createEquation(String name, DiffEquation equation) {
         return new SelectFunction<>(name, equation);
     }
 
