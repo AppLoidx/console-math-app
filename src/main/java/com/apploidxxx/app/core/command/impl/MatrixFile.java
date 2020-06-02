@@ -33,8 +33,8 @@ public class MatrixFile implements Command {
             return;
         }
 
-        try {
-            BufferedReader br = new BufferedReader(new FileReader(file));
+        try (BufferedReader br = new BufferedReader(new FileReader(file))){
+
             String st;
             List<Float[]> floatArray = new LinkedList<>();
             while((st = br.readLine()) != null){
