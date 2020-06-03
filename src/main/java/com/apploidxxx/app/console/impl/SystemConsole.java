@@ -2,7 +2,6 @@ package com.apploidxxx.app.console.impl;
 
 import com.apploidxxx.app.console.Console;
 
-import java.io.IOException;
 import java.io.PrintStream;
 import java.util.Scanner;
 
@@ -14,7 +13,7 @@ public class SystemConsole implements Console {
     private final static Scanner scanner = new Scanner(System.in);
 
     @Override
-    public String readLine() throws IOException {
+    public String readLine() {
         return scanner.nextLine();
     }
 
@@ -29,17 +28,17 @@ public class SystemConsole implements Console {
     }
 
     @Override
-    public String readPath() throws IOException {
+    public String readPath() {
         return scanner.nextLine();
     }
 
     @Override
-    public int readInt() throws IOException {
+    public int readInt() {
         return Integer.parseInt(scanner.nextLine());
     }
 
     @Override
-    public void clearScreen() throws Exception {
+    public void clearScreen() {
 
     }
 
