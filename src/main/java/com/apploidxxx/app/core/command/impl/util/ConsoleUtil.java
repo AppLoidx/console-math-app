@@ -10,6 +10,7 @@ import util.printer.impl.SimplePrettyPrinter;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.IntStream;
 
 /**
@@ -29,6 +30,21 @@ public final class ConsoleUtil {
             return readDouble(prompt, console);
         }
     }
+
+    public static Optional<String> getParam(String key, String context) {
+        String[] args = context.split(" ");
+        for (String arg : args) {
+            if (arg.startsWith("--")) {
+                String val = arg.substring(2);
+                if (val.equals(key)) {
+                    return Optional.of(val);
+                }
+            }
+        }
+
+        return Optional.empty();
+    }
+
 
     public static int readInt(Console console) throws IOException {
         try {
@@ -60,9 +76,8 @@ public final class ConsoleUtil {
      *
      * @param console IO interface
      * @return array of bounds [first, second]
-     * @throws IOException IOException
      */
-    public static double[] readBoundaries(Console console) throws IOException {
+    public static double[] readBoundaries(Console console) {
         double[] boundaries = new double[2];
         boundaries[0] = readDouble("\nВведите нижнюю границу:", console);
         boundaries[1] = readDouble("\nВведите верхнюю границу:", console);
