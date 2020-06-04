@@ -16,7 +16,7 @@ class GraphPanelTest {
     public void simpleTest() {
         List<Score> scores = new ArrayList<>();
 
-        GraphPanel panel = new GraphPanel(scores);
+        GraphPanel panel = new GraphPanel(scores, "Test");
         List<ExtendedFunction> functions = new ArrayList<>();
         functions.add(new ExtendedFunction(Math::sin));
         functions.add(new ExtendedFunction(Math::cos));
@@ -25,19 +25,4 @@ class GraphPanelTest {
 
     }
 
-    public static void main(String[] args) {
-        List<Score> scores = new ArrayList<>();
-
-        GraphPanel panel = new GraphPanel(scores);
-        List<ExtendedFunction> functions = new ArrayList<>();
-        functions.add( new ExtendedFunction(x -> Math.pow(x, 2) - 1));
-        functions.get(0).setBoundaries(1, 3d);
-        functions.add(new ExtendedFunction(x -> Math.sqrt(x + 1)));
-        functions.get(1).setBoundaries(1, 3d);
-
-        Map<Double, Double> map = new HashMap<>();
-        map.put(1d, 1d);
-        GraphPanel.drawGraph(functions, map, 0.001d);
-
-    }
 }
