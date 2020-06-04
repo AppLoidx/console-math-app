@@ -11,6 +11,7 @@ import core.DiffEquationSolver;
 import core.Interpolator;
 import core.impl.ImprovedEulerDiffEquationSolver;
 import core.impl.NewtonInterpolator;
+import lombok.SneakyThrows;
 import util.function.DiffEquation;
 import util.function.ExtendedFunction;
 import util.function.interfaces.Dot;
@@ -19,6 +20,7 @@ import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.function.BiFunction;
 
 import static java.lang.Math.sin;
 
@@ -27,6 +29,7 @@ import static java.lang.Math.sin;
  */
 @Executable(value = "diff-equation", aliases = {"deq", "diff-eq"})
 public class DiffEquationCommand implements Command {
+
     private static final DiffEquationSolver SOLVER = new ImprovedEulerDiffEquationSolver();
     private static final Interpolator INTERPOLATOR = new NewtonInterpolator();
     private static final List<SelectFunction<DiffEquation>> equations = new ArrayList<>();
@@ -39,7 +42,7 @@ public class DiffEquationCommand implements Command {
     @Override
     public void execute(Console console, String context) throws Exception {
         SelectFunction<DiffEquation> selectedFunc = ConsoleUtil.selectFunction(console, equations);
-        List<Dot> dots = calculateDotsFrom(selectedFunc, console);
+        List<Dot> dots = calculateDotsFrom(selectedFunc, console, context);
 
         ExtendedFunction interpolatedFunc = interpolateDots(dots);
 
@@ -47,6 +50,7 @@ public class DiffEquationCommand implements Command {
 
         if (ConsoleUtil.getParam("show-newton", context).isPresent())
             GraphPanel.drawGraph(interpolatedFunc, Map.of(0d, interpolatedYValue, dots.get(0).getX(), dots.get(0).getY()), 0.001, String.format("(%s) Интерполированное методом Ньютона", selectedFunc.getName()));
+
         Score score = new Score();
 
         for (Dot d : dots) {
@@ -58,7 +62,8 @@ public class DiffEquationCommand implements Command {
         GraphPanel.drawGraph(List.of(score), selectedFunc.getName());
 
         console.println("Selected function : " + selectedFunc.getName());
-        console.println("Interpolation result : " + interpolatedYValue);
+        console.println("Interpolation result at x = 0, y = " + interpolatedYValue);
+        console.println("Dots amount: " + dots.size());
     }
 
     private ExtendedFunction interpolateDots(List<Dot> dots) {
@@ -67,8 +72,25 @@ public class DiffEquationCommand implements Command {
         return interpolatedFunc;
     }
 
-    private List<Dot> calculateDotsFrom(SelectFunction<DiffEquation> selectedFunc, Console console) {
+    @SneakyThrows
+    private List<Dot> calculateDotsFrom(SelectFunction<DiffEquation> selectedFunc, Console console, String context) {
         double[] startValues = readStartValues(console);
+        if (ConsoleUtil.getParam("manual", context).isPresent()) {
+            return calculateDotsWithManualConfig(selectedFunc, console, startValues);
+        } else {
+            return calculateDotsWithAccuracy(selectedFunc, console, startValues);
+        }
+    }
+
+    @SneakyThrows
+    private List<Dot> calculateDotsWithManualConfig(SelectFunction<DiffEquation> selectedFunc, Console console, double[] startValues) {
+        console.print("Введите число точек: ");
+        int pointAmount = ConsoleUtil.readInt(console, 10, 100);
+        double step = ConsoleUtil.readDouble("Введите шаг: ", console);
+        return SOLVER.solve(selectedFunc.getFunc(), startValues[0], startValues[1], pointAmount, step);
+    }
+
+    private List<Dot> calculateDotsWithAccuracy(SelectFunction<DiffEquation> selectedFunc, Console console, double[] startValues){
         double accuracy = ConsoleUtil.readDouble("Введите точность вычисляемого значения: ", console);
         return SOLVER.solve(selectedFunc.getFunc(), startValues[0], startValues[1], accuracy);
     }
@@ -84,14 +106,10 @@ public class DiffEquationCommand implements Command {
 
     private static void initFunctions() {
 
-        DiffEquation function1 = new DiffEquation((x, y) -> sin(x));
-        DiffEquationCommand.equations.add(createEquation("y' = sin(x)", function1));
-
-        DiffEquation function2 = new DiffEquation((x, y) -> x - y);
-        DiffEquationCommand.equations.add(createEquation("y' = x - y", function2));
-
-        DiffEquation function3 = new DiffEquation((x , y) -> y * (2 * sin(x) + 1));
-        DiffEquationCommand.equations.add(createEquation("y' = y * ( 2 * sin(x) + 1)", function3));
+        DiffEquationCommand.equations.add(createEquation("y' = sin(x)", (x, y) -> sin(x)));
+        DiffEquationCommand.equations.add(createEquation("y' = x - y", (x, y) -> x - y));
+        DiffEquationCommand.equations.add(createEquation("y' = y * ( 2 * sin(x) + 1)",  (x, y) -> y * (2 * sin(x) + 1)));
+        DiffEquationCommand.equations.add(createEquation("y' = y",  (x, y) -> y));
 
     }
 
@@ -102,8 +120,8 @@ public class DiffEquationCommand implements Command {
         return new double[]{x0, y0};
     }
 
-    private static SelectFunction<DiffEquation> createEquation(String name, DiffEquation equation) {
-        return new SelectFunction<>(name, equation);
+    private static SelectFunction<DiffEquation> createEquation(String name, BiFunction<Double, Double, Double> biFunction) {
+        return new SelectFunction<>(name, new DiffEquation(biFunction));
     }
 
 }
