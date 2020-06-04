@@ -10,7 +10,6 @@ import java.util.List;
 import java.util.*;
 import java.util.stream.Collectors;
 
-//import java.awt.Point;
 
 
 /**
@@ -36,6 +35,7 @@ public class GraphPanel extends JPanel {
             new Color(216, 255, 0),
             new Color(0, 19, 141)
     };
+    private final String name;
 
     private final static Color[] DOT_COLORS = new Color[]{
             new Color(0, 177, 22),
@@ -44,8 +44,9 @@ public class GraphPanel extends JPanel {
     };
     private int currentDotColor = 0;
 
-    public GraphPanel(List<Score> scores) {
+    public GraphPanel(List<Score> scores, String frameName) {
         this.scores = scores;
+        name = frameName == null ? "Куприянов Артур - Лаба №5" : frameName;
     }
 
     private int graphSize() {
@@ -108,8 +109,8 @@ public class GraphPanel extends JPanel {
     }
 
     private void drawFrameName(Graphics2D g2) {
-        String frameName = "Куприянов Артур - Лабораторная работа №3";
-        String smallFrameName = "Куприянов Артур";
+        String frameName = name;
+        String smallFrameName = "График";
         int frameNameSize = g2.getFontMetrics().stringWidth(frameName);
         if (frameNameSize < getWidth())
             g2.drawString(frameName, GLOBAL_PADDING + LABEL_PADDING + (getWidth() - (2 * GLOBAL_PADDING) - LABEL_PADDING - LABEL_PADDING) / 2 - frameNameSize / 2, 15);
@@ -208,10 +209,16 @@ public class GraphPanel extends JPanel {
     private void drawAxis(Graphics2D g2, int paddingX, int paddingY) {
         g2.setColor(new Color(41, 169, 162));
         g2.setStroke(new BasicStroke(3f));
+
         g2.drawLine(GLOBAL_PADDING + LABEL_PADDING + paddingX, getHeight() - GLOBAL_PADDING - LABEL_PADDING, GLOBAL_PADDING + LABEL_PADDING + paddingX, GLOBAL_PADDING);
         g2.drawLine(GLOBAL_PADDING + LABEL_PADDING, getHeight() - GLOBAL_PADDING - LABEL_PADDING + paddingY, getWidth() - GLOBAL_PADDING, getHeight() - GLOBAL_PADDING - LABEL_PADDING + paddingY);
 
     }
+
+//    private void drawAxisMarks(Graphics2D g2, int paddingX, int paddingY) {
+//        g2.drawString("y", GLOBAL_PADDING + LABEL_PADDING + paddingX + 15, GLOBAL_PADDING + 5);
+//        g2.drawString("x", getWidth() - GLOBAL_PADDING, getHeight() - GLOBAL_PADDING - LABEL_PADDING + paddingY - 15);
+//    }
 
     private void drawGraph(Graphics2D g2, List<List<Point>> graphPoints) {
         int index = 0;
@@ -306,11 +313,11 @@ public class GraphPanel extends JPanel {
         return maxScore;
     }
 
-    private static void createAndShowGui(List<Score> scores) {
+    private static void createAndShowGui(List<Score> scores, String frameName) {
 
-        GraphPanel mainPanel = new GraphPanel(scores);
+        GraphPanel mainPanel = new GraphPanel(scores, frameName);
         mainPanel.setPreferredSize(new Dimension(800, 600));
-        JFrame frame = new JFrame("Arthur Kupriyanov - Lab 3");
+        JFrame frame = new JFrame("Куприянов Артур - Лабораторная работа #5");
 
         frame.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
         frame.getContentPane().add(mainPanel);
@@ -324,16 +331,29 @@ public class GraphPanel extends JPanel {
         drawGraph(List.of(function), singleDots, accuracy);
     }
 
+    public static void drawGraph(ExtendedFunction function, Map<Double, Double> singleDots, double accuracy, String frameName) {
+        drawGraph(List.of(function), singleDots, accuracy, frameName);
+    }
+
     public static void drawGraph(List<ExtendedFunction> functions, Map<Double, Double> singleDots, double accuracy) {
         int minDataPoints = 100;
         List<Score> scores = createScoresForFunctions(functions, minDataPoints, accuracy);
         scores.add(createSingleDotsScore(singleDots));
         drawGraph(scores);
     }
+    public static void drawGraph(List<ExtendedFunction> functions, Map<Double, Double> singleDots, double accuracy, String frameName) {
+        int minDataPoints = 100;
+        List<Score> scores = createScoresForFunctions(functions, minDataPoints, accuracy);
+        scores.add(createSingleDotsScore(singleDots));
+        drawGraph(scores, frameName);
+    }
 
     public static void drawGraph(List<Score> scores) {
+        drawGraph(scores, "Куприянов Артур - Лабораторная работа #5");
+    }
+    public static void drawGraph(List<Score> scores, String frameName) {
         scores.forEach(Score::sort);
-        SwingUtilities.invokeLater(() -> createAndShowGui(scores));
+        SwingUtilities.invokeLater(() -> createAndShowGui(scores, frameName));
     }
 
 
