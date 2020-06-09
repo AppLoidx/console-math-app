@@ -111,20 +111,15 @@ public class Integral implements Command {
     }
 
     private double readBoundary(Console console, ExtendedFunction function) throws IOException {
-        try {
-            int numb = Integer.parseInt(console.readLine());
-            double val = function.apply(numb);
-            if (Double.isInfinite(val) || Double.isNaN(val)) {
-                console.println("В знаменателе получилось 0. Введите другое число");
-                return readBoundary(console, function);
-            }
-
-            return numb;
-
-        } catch (NumberFormatException e) {
-            console.println("Введите цело число в области значений int");
+        double numb = ConsoleUtil.readDouble("", console);
+        double val = function.apply(numb);
+        if (Double.isInfinite(val) || Double.isNaN(val)) {
+            console.println("В знаменателе получилось 0. Введите другое число");
             return readBoundary(console, function);
         }
+
+        return numb;
+
     }
 
     private double readAccuracy(Console console) throws IOException {
