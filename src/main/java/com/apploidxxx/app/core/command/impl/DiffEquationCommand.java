@@ -91,7 +91,7 @@ public class DiffEquationCommand implements Command {
         return SOLVER.solve(selectedFunc.getFunc(), startValues[0], startValues[1], pointAmount, step);
     }
 
-    private List<Dot> calculateDotsWithAccuracy(SelectFunction<DiffEquation> selectedFunc, Console console, double[] startValues){
+    private List<Dot> calculateDotsWithAccuracy(SelectFunction<DiffEquation> selectedFunc, Console console, double[] startValues) {
         double accuracy = ConsoleUtil.readDouble("Введите точность вычисляемого значения: ", console);
         return SOLVER.solve(selectedFunc.getFunc(), startValues[0], startValues[1], accuracy);
     }
@@ -109,8 +109,8 @@ public class DiffEquationCommand implements Command {
 
         DiffEquationCommand.equations.add(createEquation("y' = sin(x)", (x, y) -> sin(x)));
         DiffEquationCommand.equations.add(createEquation("y' = x - y", (x, y) -> x - y));
-        DiffEquationCommand.equations.add(createEquation("y' = y * ( 2 * sin(x) + 1)",  (x, y) -> y * (2 * sin(x) + 1)));
-        DiffEquationCommand.equations.add(createEquation("y' = y",  (x, y) -> y));
+        DiffEquationCommand.equations.add(createEquation("y' = y * ( 2 * sin(x) + 1)", (x, y) -> y * (2 * sin(x) + 1)));
+        DiffEquationCommand.equations.add(createEquation("y' = y", (x, y) -> y));
 
     }
 

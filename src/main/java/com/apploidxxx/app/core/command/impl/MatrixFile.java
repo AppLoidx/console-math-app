@@ -28,22 +28,22 @@ public class MatrixFile implements Command {
         String path = console.readPath().trim();
         File file = new File(path);
 
-        if (!file.canRead()){
+        if (!file.canRead()) {
             console.println("Нету прав доступа для чтения файла!");
             return;
         }
 
-        try (BufferedReader br = new BufferedReader(new FileReader(file))){
+        try (BufferedReader br = new BufferedReader(new FileReader(file))) {
 
             String st;
             List<Float[]> floatArray = new LinkedList<>();
-            while((st = br.readLine()) != null){
+            while ((st = br.readLine()) != null) {
                 Float[] values = from(MatrixReader.parseLine(st));
                 floatArray.add(values);
             }
 
             Matrix matrix = getMatrix(floatArray);
-            if (!GaussMatrixSolver.isCanBeSolved(matrix)){
+            if (!GaussMatrixSolver.isCanBeSolved(matrix)) {
                 console.println("Система не пригодна для решения стандартным методом Гаусса");
                 return;
             }
@@ -53,27 +53,28 @@ public class MatrixFile implements Command {
             console.println("Файл с таким именем не найден\nНажмите любую клавишу для продолжения...");
             console.readLine();
             console.clearScreen();
-        } catch (ArrayIndexOutOfBoundsException | IllegalArgumentException e){
+        } catch (ArrayIndexOutOfBoundsException | IllegalArgumentException e) {
             console.println("Файл имеет неверное форматирование!\nНажмите любую клавишу для продолжения...");
             console.readLine();
             console.clearScreen();
         }
     }
 
-    private Float[] from(float[] array){
+    private Float[] from(float[] array) {
         Float[] arrayFloat = new Float[array.length];
         int index = 0;
-        for( float val : array){
+        for (float val : array) {
             arrayFloat[index] = val;
             index++;
         }
 
         return arrayFloat;
     }
-    private float[] from(Float[] array){
+
+    private float[] from(Float[] array) {
         float[] arrayFloat = new float[array.length];
         int index = 0;
-        for( float val : array){
+        for (float val : array) {
             arrayFloat[index] = val;
             index++;
         }
@@ -81,10 +82,10 @@ public class MatrixFile implements Command {
         return arrayFloat;
     }
 
-    private Matrix getMatrix(List<Float[]> floatArray){
+    private Matrix getMatrix(List<Float[]> floatArray) {
         float[][] floats = new float[floatArray.size()][floatArray.get(0).length];
         int index = 0;
-        for (Float[] arr: floatArray){
+        for (Float[] arr : floatArray) {
             floats[index] = from(arr);
             index++;
         }

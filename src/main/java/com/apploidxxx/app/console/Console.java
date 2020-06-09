@@ -16,6 +16,7 @@ public interface Console {
     String readLine() throws IOException;
 
     String readLine(String rightPrompt);
+
     String readLine(String leftPrompt, String rightPrompt);
 
     /**
@@ -67,7 +68,7 @@ public interface Console {
      * operations which depends on the size of console. And I really
      * don't recommend to return a large size.
      * <br/>
-     *
+     * <p>
      * For example, it used in {@link com.apploidxxx.app.core.command.impl.util.ConsoleUtil#printLine(Console)}
      *
      * @return console width in chars

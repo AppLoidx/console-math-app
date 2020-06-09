@@ -15,5 +15,6 @@ public @interface Executable {
      * @return Command name
      */
     String value();
+
     String[] aliases() default {};
 }

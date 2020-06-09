@@ -11,7 +11,10 @@ import util.function.DerivativeFunction;
 import util.function.ExtendedFunction;
 
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.function.Function;
 
 /**
@@ -69,10 +72,10 @@ public class NonLinear implements Command {
         } catch (IllegalArgumentException e) {
             console.println("[Iteration Solver] Error: " + e.getMessage());
             double lastAnsIteration = iterationSolver.getLastAnswer();
-            if (!Double.isNaN(lastAnsIteration ) && !Double.isInfinite(lastAnsIteration )) {
-                console.println("[Iteration Solver] Последний полученный ответ до ошибки: " + lastAnsIteration );
+            if (!Double.isNaN(lastAnsIteration) && !Double.isInfinite(lastAnsIteration)) {
+                console.println("[Iteration Solver] Последний полученный ответ до ошибки: " + lastAnsIteration);
                 console.println("[WARN] Полученный ответ будет отличаться от желаемой точности");
-                answers.put(lastAnsIteration , function.apply(lastAnsIteration ));
+                answers.put(lastAnsIteration, function.apply(lastAnsIteration));
             }
         }
 
@@ -201,6 +204,7 @@ public class NonLinear implements Command {
             return readInt(console);
         }
     }
+
     private double readDouble(Console console) throws IOException {
         try {
             return Double.parseDouble(console.readLine());
@@ -256,7 +260,7 @@ public class NonLinear implements Command {
         list.add(new SelectFunction(Math::sin, new DerivativeFunction(Math::cos), "sin(x)"));
         list.add(new SelectFunction(x -> Math.pow(x, 3) - 4 * x + 4, new DerivativeFunction(x -> Math.pow(x, 2) * 3 - 4), "x^3 - 4x + 4"));
         // -2.38
-        list.add(new SelectFunction(x -> Math.sin(1 / x), new DerivativeFunction(x -> - Math.cos(1/x) / Math.pow(x, 2)), "sin(1/x)"));
+        list.add(new SelectFunction(x -> Math.sin(1 / x), new DerivativeFunction(x -> -Math.cos(1 / x) / Math.pow(x, 2)), "sin(1/x)"));
 //        list.add(new SelectFunction(x -> 1 / Math.pow(x, 2), new DerivativeFunction(x -> -2 / Math.pow(x, 3)), "1/x^2"));
 
         return list;

@@ -10,6 +10,7 @@ import com.apploidxxx.app.core.command.CommandManager;
 public class DefaultShell implements Shell {
     private final Console console;
     private final CommandManager commandManager;
+
     public DefaultShell(Console console) {
         this.console = console;
         commandManager = new CommandManager();
@@ -30,15 +31,15 @@ public class DefaultShell implements Shell {
         do {
             command = console.readLine();
             if (!command.equals("") && command.split(" ").length > 0)
-            commandManager.getCommand(command.split(" ")[0]).execute(console, command);
+                commandManager.getCommand(command.split(" ")[0]).execute(console, command);
         } while (isNotExitCommand(command));
     }
 
-    private boolean isNotExitCommand(String command){
+    private boolean isNotExitCommand(String command) {
         return !"exit".equals(command);
     }
 
-    private void printWelcomeText(){
+    private void printWelcomeText() {
         console.println(" _           _          _____ \n" +
                         "| |         | |        |____ |\n" +
                         "| |     __ _| |__ ______   / /\n" +
@@ -50,7 +51,7 @@ public class DefaultShell implements Shell {
         printAuthor();
     }
 
-    private void printAuthor(){
+    private void printAuthor() {
         console.println("author: Arthur Kupriyanov");
     }
 }

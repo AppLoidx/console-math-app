@@ -19,19 +19,19 @@ public class MatrixRandom implements Command {
     @Override
     public void execute(Console console, String context) throws Exception {
         String[] args = context.split(" ");
-        if (args.length < 2){
+        if (args.length < 2) {
             console.println("Формат команды matrix-random <размер>");
             return;
         }
         try {
             int dimension = Integer.parseInt(args[1]);
 
-            if (dimension <= 0 || dimension > 20){
+            if (dimension <= 0 || dimension > 20) {
                 console.println("Размер матрицы не входит допустимые значения");
             } else {
                 solve(console, dimension);
             }
-        } catch (NumberFormatException e){
+        } catch (NumberFormatException e) {
             console.println("Размер матрицы должен быть указан числом");
         }
     }
@@ -50,20 +50,18 @@ public class MatrixRandom implements Command {
         private static final Random random = new Random();
 
 
-        public static float[][] getRandomMatrix(int x, int y){
+        public static float[][] getRandomMatrix(int x, int y) {
             return getRandomFloatMatrix(x, y);
         }
 
 
-
-        private static float[][] getRandomFloatMatrix(int x, int y){
+        private static float[][] getRandomFloatMatrix(int x, int y) {
             float[][] matrix = new float[y][x];
             return matrixFill(matrix, x, y);
         }
 
 
-
-        private static  float[][] matrixFill(final float[][] matrix, int x, int y){
+        private static float[][] matrixFill(final float[][] matrix, int x, int y) {
             IntStream.range(0, y)
                     .forEach(i -> {
                         IntStream.range(0, x)
@@ -75,7 +73,7 @@ public class MatrixRandom implements Command {
             return matrix;
         }
 
-        private static float getRandomFloat(){
+        private static float getRandomFloat() {
             final int min = 12;
             final int max = 20;
             return min + random.nextFloat() * (max - min);

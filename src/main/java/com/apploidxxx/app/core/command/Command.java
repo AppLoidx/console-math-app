@@ -8,7 +8,6 @@ import com.apploidxxx.app.console.Console;
 @FunctionalInterface
 public interface Command {
     /**
-     *
      * @param console Terminal
      * @param context Executed command
      */

@@ -11,7 +11,6 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 
-
 /**
  * @author Arthur Kupriyanov on 07.04.2020
  */
@@ -339,6 +338,7 @@ public class GraphPanel extends JPanel {
         scores.add(createSingleDotsScore(singleDots));
         drawGraph(scores);
     }
+
     public static void drawGraph(List<ExtendedFunction> functions, Map<Double, Double> singleDots, double accuracy, String frameName) {
         int minDataPoints = 100;
         List<Score> scores = createScoresForFunctions(functions, minDataPoints, accuracy);
@@ -349,6 +349,7 @@ public class GraphPanel extends JPanel {
     public static void drawGraph(List<Score> scores) {
         drawGraph(scores, "Куприянов Артур - Лабораторная работа #5");
     }
+
     public static void drawGraph(List<Score> scores, String frameName) {
         scores.forEach(Score::sort);
         SwingUtilities.invokeLater(() -> createAndShowGui(scores, frameName));

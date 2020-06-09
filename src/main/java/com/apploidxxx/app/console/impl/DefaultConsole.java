@@ -15,7 +15,6 @@ import java.io.InputStream;
 import java.io.PrintStream;
 
 /**
- *
  * Works only in bash (not work in idea console)
  *
  * @author Arthur Kupriyanov on 18.02.2020
@@ -52,7 +51,7 @@ public class DefaultConsole implements Console {
                 .variable(LineReader.INDENTATION, 2)
                 .build();
 
-        return reader.readLine("", rightPrompt, (MaskingCallback) null , null);
+        return reader.readLine("", rightPrompt, (MaskingCallback) null, null);
     }
 
     @Override
@@ -63,7 +62,7 @@ public class DefaultConsole implements Console {
                 .variable(LineReader.INDENTATION, 2)
                 .build();
 
-        return reader.readLine(leftPrompt, rightPrompt, (MaskingCallback) null , null);
+        return reader.readLine(leftPrompt, rightPrompt, (MaskingCallback) null, null);
     }
 
     @Override
@@ -81,8 +80,9 @@ public class DefaultConsole implements Console {
 
     /**
      * Reads int from terminals and ignores all literal chars input
+     *
      * @return User input
-     * @throws IOException  If an I/O error occurs
+     * @throws IOException If an I/O error occurs
      */
     @Override
     public int readInt() throws IOException {

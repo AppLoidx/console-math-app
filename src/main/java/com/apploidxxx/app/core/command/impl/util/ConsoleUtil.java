@@ -21,8 +21,7 @@ public final class ConsoleUtil {
     }
 
     /**
-     *
-     * @param prompt left prompt
+     * @param prompt  left prompt
      * @param console IO interface
      * @return user's double
      */
@@ -39,7 +38,8 @@ public final class ConsoleUtil {
 
     /**
      * Parse and get param from context
-     * @param key value which starts with "--". For example, <code>--limit-off</code> -> limit-off
+     *
+     * @param key     value which starts with "--". For example, <code>--limit-off</code> -> limit-off
      * @param context context of command
      * @return key
      * TODO: rewrite with return value of key
@@ -59,7 +59,6 @@ public final class ConsoleUtil {
     }
 
     /**
-     *
      * @see ConsoleUtil#readInt(Console, int, int)
      */
     public static int readInt(Console console) throws IOException {
@@ -108,6 +107,7 @@ public final class ConsoleUtil {
 
     /**
      * Print one long line on whole console width
+     *
      * @param console Output interface
      */
     public static void printLine(Console console) {
@@ -117,9 +117,10 @@ public final class ConsoleUtil {
 
     /**
      * Select one of the passed select functions
-     * @param console IO interface
+     *
+     * @param console   IO interface
      * @param functions list of functions
-     * @param <T> select function target
+     * @param <T>       select function target
      * @return selected functions
      * @throws IOException IO
      */
@@ -134,8 +135,9 @@ public final class ConsoleUtil {
 
     /**
      * Pretty print for Matrix
-     * @param matrix printable matrix
-     * @param solver getting calculate determinant from used instance
+     *
+     * @param matrix  printable matrix
+     * @param solver  getting calculate determinant from used instance
      * @param console IO interface
      * @throws Exception IO or {@link ProcessBuilder} exception
      */

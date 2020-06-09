@@ -99,7 +99,7 @@ public class NonLinearSystem implements Command {
         ExtendedFunction func2 = new ExtendedFunction(y -> Math.pow(y, 3) - 1);
         func2.setRepresentation(new ExtendedFunction(x -> {
             if (x >= -1) return Math.pow(x + 1, 1 / 3d);
-            else return -1 * Math.pow(Math.abs(x) + 1, 1/3d);
+            else return -1 * Math.pow(Math.abs(x) + 1, 1 / 3d);
         }));
 //        func2.getRepresentation().setIsInRange(x -> x > 0);
         func2.setDerivativeFunction(new DerivativeFunction(x -> 1 / (3d * (Math.pow(x + 1, 2 / 3d))))); //x -> Math.pow(Math.E, x)));

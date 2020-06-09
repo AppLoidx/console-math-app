@@ -11,11 +11,10 @@ import java.util.stream.Collectors;
 /**
  * Contains points for Graphs
  *
- *
- * @see Point
  * @author Arthur Kupriyanov on 08.04.2020
+ * @see Point
  */
-public class Score implements Iterable<Point>{
+public class Score implements Iterable<Point> {
 
     private final LinkedList<Point> scores = new LinkedList<>();
     private final LinkedList<Point> outOfGraphScore = new LinkedList<>();
@@ -34,11 +33,11 @@ public class Score implements Iterable<Point>{
     /**
      * Add new point
      *
-     * @param x coordinate
-     * @param y coordinate
+     * @param x            coordinate
+     * @param y            coordinate
      * @param isNotInGraph instruction for graph about drawing
      *                     with dow as single dot (not in graph) {@link Point#isNotInGraph()}
-     * @param color color of the dot
+     * @param color        color of the dot
      */
     public void addPoint(Double x, Double y, boolean isNotInGraph, Color color) {
         Point p = new Point(x, y);
@@ -58,7 +57,7 @@ public class Score implements Iterable<Point>{
         return merged.iterator();
     }
 
-    public List<Point> getList(){
+    public List<Point> getList() {
         return scores.stream().sorted(Comparator.comparingDouble(Point::getX)).collect(Collectors.toList());
     }
 
@@ -66,7 +65,7 @@ public class Score implements Iterable<Point>{
         scores.sort(Comparator.comparingDouble(Point::getX));
     }
 
-    public int graphSize(){
+    public int graphSize() {
         return scores.size();
     }
 

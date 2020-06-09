@@ -96,7 +96,7 @@ public class ConsoleManager {
             } else if (parameters == 0) {
                 return createInstance(constructor);
             } else {
-                throw  new InstantiationException("Find class with invalid amount of types in constructor " + clazz.getCanonicalName());
+                throw new InstantiationException("Find class with invalid amount of types in constructor " + clazz.getCanonicalName());
             }
         }
         throw new InstantiationException("Can't find valid constructor " + clazz.getCanonicalName());

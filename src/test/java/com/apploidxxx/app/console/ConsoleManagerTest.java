@@ -14,7 +14,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 class ConsoleManagerTest {
 
     @Test
-    public void test () {
+    public void test() {
 
     }
 
