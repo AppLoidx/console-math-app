@@ -20,6 +20,12 @@ public final class ConsoleUtil {
     private ConsoleUtil() {
     }
 
+    /**
+     *
+     * @param prompt left prompt
+     * @param console IO interface
+     * @return user's double
+     */
     @SneakyThrows
     public static double readDouble(String prompt, Console console) {
         console.print(prompt);
@@ -31,6 +37,13 @@ public final class ConsoleUtil {
         }
     }
 
+    /**
+     * Parse and get param from context
+     * @param key value which starts with "--". For example, <code>--limit-off</code> -> limit-off
+     * @param context context of command
+     * @return key
+     * TODO: rewrite with return value of key
+     */
     public static Optional<String> getParam(String key, String context) {
         String[] args = context.split(" ");
         for (String arg : args) {
@@ -45,7 +58,10 @@ public final class ConsoleUtil {
         return Optional.empty();
     }
 
-
+    /**
+     *
+     * @see ConsoleUtil#readInt(Console, int, int)
+     */
     public static int readInt(Console console) throws IOException {
         try {
             return Integer.parseInt(console.readLine());
@@ -90,11 +106,23 @@ public final class ConsoleUtil {
         return boundaries;
     }
 
+    /**
+     * Print one long line on whole console width
+     * @param console Output interface
+     */
     public static void printLine(Console console) {
         String line = "_".repeat(console.getSize());
         console.println(line);
     }
 
+    /**
+     * Select one of the passed select functions
+     * @param console IO interface
+     * @param functions list of functions
+     * @param <T> select function target
+     * @return selected functions
+     * @throws IOException IO
+     */
     public static <T> SelectFunction<T> selectFunction(Console console, List<SelectFunction<T>> functions) throws IOException {
         console.println("Выберите функцию");
         IntStream.range(0, functions.size())
@@ -104,6 +132,13 @@ public final class ConsoleUtil {
         return functions.get(function);
     }
 
+    /**
+     * Pretty print for Matrix
+     * @param matrix printable matrix
+     * @param solver getting calculate determinant from used instance
+     * @param console IO interface
+     * @throws Exception IO or {@link ProcessBuilder} exception
+     */
     public static void printMatrixSolution(Matrix matrix, GaussMatrixSolver solver, Console console) throws Exception {
 
 
