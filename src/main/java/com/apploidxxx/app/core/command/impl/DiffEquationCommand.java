@@ -47,18 +47,18 @@ public class DiffEquationCommand implements Command {
         ExtendedFunction interpolatedFunc = interpolateDots(dots);
 
         double interpolatedYValue = interpolatedFunc.apply(0d);
-
+        console.clearScreen();
         if (ConsoleUtil.getParam("show-newton", context).isPresent())
             GraphPanel.drawGraph(interpolatedFunc, Map.of(0d, interpolatedYValue, dots.get(0).getX(), dots.get(0).getY()), 0.001, String.format("(%s) Интерполированное методом Ньютона", selectedFunc.getName()));
 
         Score score = new Score();
 
         for (Dot d : dots) {
-            score.addScore(d.getX(), d.getY());
+            score.addPoint(d.getX(), d.getY());
         }
 
-        score.addScore(0d, interpolatedYValue, true, Color.RED);
-        score.addScore(dots.get(0).getX(), dots.get(0).getY(), true, Color.CYAN);
+        score.addPoint(0d, interpolatedYValue, true, Color.RED);
+        score.addPoint(dots.get(0).getX(), dots.get(0).getY(), true, Color.CYAN);
         GraphPanel.drawGraph(List.of(score), selectedFunc.getName());
 
         console.println("Selected function : " + selectedFunc.getName());
@@ -74,6 +74,7 @@ public class DiffEquationCommand implements Command {
 
     @SneakyThrows
     private List<Dot> calculateDotsFrom(SelectFunction<DiffEquation> selectedFunc, Console console, String context) {
+        console.clearScreen();
         double[] startValues = readStartValues(console);
         if (ConsoleUtil.getParam("manual", context).isPresent()) {
             return calculateDotsWithManualConfig(selectedFunc, console, startValues);
