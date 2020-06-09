@@ -41,7 +41,7 @@ public class DefaultConsole implements Console {
                 .variable(LineReader.INDENTATION, 2)
                 .build();
 
-        return reader.readLine(">");
+        return reader.readLine("");
     }
 
     @Override
@@ -52,7 +52,7 @@ public class DefaultConsole implements Console {
                 .variable(LineReader.INDENTATION, 2)
                 .build();
 
-        return reader.readLine(">", rightPrompt, (MaskingCallback) null , null);
+        return reader.readLine("", rightPrompt, (MaskingCallback) null , null);
     }
 
     @Override
@@ -63,7 +63,7 @@ public class DefaultConsole implements Console {
                 .variable(LineReader.INDENTATION, 2)
                 .build();
 
-        return reader.readLine(">" + leftPrompt, rightPrompt, (MaskingCallback) null , null);
+        return reader.readLine(leftPrompt, rightPrompt, (MaskingCallback) null , null);
     }
 
     @Override
@@ -76,7 +76,7 @@ public class DefaultConsole implements Console {
                 .variable(LineReader.INDENTATION, 2)
                 .build();
 
-        return reader.readLine(">");
+        return reader.readLine("");
     }
 
     /**
