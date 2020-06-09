@@ -226,9 +226,7 @@ public class GraphPanel extends JPanel {
             g2.setColor(getLineColor(index));
             g2.setStroke(GRAPH_STROKE);
             for (int i = 0; i < graph.size() - 1; i++) {
-                if (graph.get(i + 1).isBreakPoint() || graph.get(i).isBreakPoint()) {
-                    continue;
-                }
+
                 int x1 = (int) graph.get(i).x;
                 int y1 = (int) graph.get(i).y;
                 int x2 = (int) graph.get(i + 1).x;
@@ -369,7 +367,7 @@ public class GraphPanel extends JPanel {
                 double x = Math.round(add * (1d / accuracy)) / (1d / accuracy);
                 double y = function.apply(add);
 
-                score.addScore(x, y);
+                score.addPoint(x, y);
 
                 add += step;
             }
@@ -384,7 +382,7 @@ public class GraphPanel extends JPanel {
         answersScore.setNotInGraph(true);   // don't interpolate
         int colorIndex = 0;
         for (Double key : singleDots.keySet()) {
-            answersScore.addScore(key, singleDots.get(key), true, DOT_COLORS[colorIndex % (DOT_COLORS.length - 1)]);
+            answersScore.addPoint(key, singleDots.get(key), true, DOT_COLORS[colorIndex % (DOT_COLORS.length - 1)]);
         }
         return answersScore;
     }
