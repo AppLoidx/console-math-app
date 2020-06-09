@@ -7,6 +7,13 @@
     <artifactId>console-math-app</artifactId>
     <version>5.0-SNAPSHOT</version>
 
+    <developers>
+        <developer>
+            <name>Arthur Kupriyanov</name>
+            <url>https://github.com/AppLoidx</url>
+        </developer>
+    </developers>
+
     <parent>
         <groupId>com.apploidxxx</groupId>
         <artifactId>comp-lab-parent</artifactId>
