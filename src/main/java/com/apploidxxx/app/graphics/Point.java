@@ -8,19 +8,9 @@ import java.awt.*;
 public class Point extends java.awt.Point {
     public final double x;
     public final double y;
-    private Color color = Color.GREEN; // default color green
+    private Color color = Color.GREEN;
 
     private boolean isNotInGraph = false;
-
-    public boolean isBreakPoint() {
-        return isBreakPoint;
-    }
-
-    public void setBreakPoint(boolean breakPoint) {
-        isBreakPoint = breakPoint;
-    }
-
-    private boolean isBreakPoint;
 
 
     public Point(double x, double y) {
