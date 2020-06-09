@@ -58,6 +58,20 @@ public interface Console {
 
     PrintStream getOut();
 
+    /**
+     * Size of console in chars
+     * <br/>
+     *
+     * <bold>IMPORTANT</bold> : I don't recommend to set it as 0,
+     * because this property used for pretty printers and other
+     * operations which depends on the size of console. And I really
+     * don't recommend to return a large size.
+     * <br/>
+     *
+     * For example, it used in {@link com.apploidxxx.app.core.command.impl.util.ConsoleUtil#printLine(Console)}
+     *
+     * @return console width in chars
+     */
     int getSize();
 
 }
