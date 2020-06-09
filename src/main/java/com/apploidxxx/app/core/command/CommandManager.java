@@ -67,8 +67,9 @@ public class CommandManager {
             if (castedConstructor.getParameterTypes().length == 0) {
                 try {
                     commandInstance = castedConstructor.newInstance();
+                    List<String> commandNames = getCommandNames(clazz);
                     commandMap.put(getCommandNames(clazz), commandInstance);
-                    logger.info("Added command: " + bd.getBeanClassName());
+                    logger.info(String.format("Found command class %s - %s", clazz.getSimpleName(), commandNames));
                 } catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
                     e.printStackTrace();
                 }
