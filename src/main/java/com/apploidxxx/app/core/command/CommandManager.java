@@ -93,7 +93,6 @@ public class CommandManager {
     private boolean isImplementedInterface(Class<?> clazz) {
         boolean implemented = false;
         for (Class<?> i : clazz.getInterfaces()) {
-            System.out.println(i.getSimpleName());
             if (i == Command.class) {
                 implemented = true;
                 break;
