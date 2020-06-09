@@ -9,26 +9,38 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 /**
+ * Contains points for Graphs
+ *
+ *
+ * @see Point
  * @author Arthur Kupriyanov on 08.04.2020
  */
 public class Score implements Iterable<Point>{
+
     private final LinkedList<Point> scores = new LinkedList<>();
     private final LinkedList<Point> outOfGraphScore = new LinkedList<>();
     private boolean notInGraph;
-    public void addScore(Double x, Double y) {
-        addScore(x, y, false, Color.GREEN);
+
+    /**
+     * Add new point
+     *
+     * @param x coordinate
+     * @param y coordinate
+     */
+    public void addPoint(Double x, Double y) {
+        addPoint(x, y, false, Color.GREEN);
     }
 
-//    public void newGraph() {
-//        if (scores.size() > 0) {
-//            Point lastPoint = scores.getLast();
-//            Point breakPoint = new Point(lastPoint.getX(), lastPoint.getY());
-//            breakPoint.setBreakPoint(true);
-//            scores.add(breakPoint);
-//        }
-//    }
-
-    public void addScore(Double x, Double y, boolean isNotInGraph, Color color) {
+    /**
+     * Add new point
+     *
+     * @param x coordinate
+     * @param y coordinate
+     * @param isNotInGraph instruction for graph about drawing
+     *                     with dow as single dot (not in graph) {@link Point#isNotInGraph()}
+     * @param color color of the dot
+     */
+    public void addPoint(Double x, Double y, boolean isNotInGraph, Color color) {
         Point p = new Point(x, y);
         p.setNotInGraph(isNotInGraph);
         p.setColor(color);
@@ -36,7 +48,6 @@ public class Score implements Iterable<Point>{
             outOfGraphScore.add(p);
         } else {
             scores.add(p);
-//            scores.sort(Comparator.comparingDouble(Point::getX));
         }
 
     }
@@ -57,10 +68,6 @@ public class Score implements Iterable<Point>{
 
     public int graphSize(){
         return scores.size();
-    }
-
-    public Point get(int i) {
-        return scores.get(i);
     }
 
     @Override
