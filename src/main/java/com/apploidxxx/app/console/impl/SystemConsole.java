@@ -59,6 +59,6 @@ public class SystemConsole implements Console {
 
     @Override
     public int getSize() {
-        return 300;
+        return 40;
     }
 }
