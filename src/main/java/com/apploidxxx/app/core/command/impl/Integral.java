@@ -2,12 +2,16 @@ package com.apploidxxx.app.core.command.impl;
 
 import com.apploidxxx.app.console.Console;
 import com.apploidxxx.app.core.command.Command;
+import com.apploidxxx.app.core.command.impl.util.ConsoleUtil;
+import com.apploidxxx.app.core.command.impl.util.SelectFunction;
 import com.apploidxxx.app.core.command.stereotype.Executable;
 import core.impl.SimpsonSolverExtended;
 import util.function.ExtendedFunction;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 
@@ -17,66 +21,67 @@ import java.util.function.Function;
 @Executable("integral")
 public class Integral implements Command {
 
-    private static final Function<Double, Double> FUNCTION_1 = x -> (x * x - 1) / (x - 1);
-    private static final Function<Double, Double> FUNCTION_2 = x -> x * x - 1;
-    private static final Function<Double, Double> FUNCTION_3 = x -> 1d / (x * x);
-    private static final Function<Double, Double> FUNCTION_4 = x -> Math.sin(1d / x);
-    private static final Function<Double, Double> FUNCTION_5 = x -> 1d / x;
 
-    private static final String FUNCTION_1_NAME = "(x^2 - 1) / (x-1)    - removable";
-    private static final String FUNCTION_2_NAME = "x^2 - 1              - rly dude?";
-    private static final String FUNCTION_3_NAME = "1 / x ^ 2            - infinite";
-    private static final String FUNCTION_4_NAME = "sin(1/x)             - essential";
-    private static final String FUNCTION_5_NAME = "1 / x                - infinite";
+    private static final List<SelectFunction<ExtendedFunction>> functions = new ArrayList<>();
 
-    private static final String[] funcNames = new String[]{
-            FUNCTION_1_NAME,
-            FUNCTION_2_NAME,
-            FUNCTION_3_NAME,
-            FUNCTION_4_NAME,
-            FUNCTION_5_NAME
-    };
+    static {
+
+        ExtendedFunction rlyDudeFunction = new ExtendedFunction(x -> x * x - 1);
+        Map<Double, Function<Double, Double>> piecewiseMap = new HashMap<>();
+        piecewiseMap.put(1d, x -> 2d);
+        rlyDudeFunction.setPiecewiseMap(piecewiseMap);
+
+        functions.addAll(List.of(
+                new SelectFunction<>("sin(1/x)             - essential", getExtendedFunctionForSymmetricFunction(x -> Math.sin(1d / x))),
+                new SelectFunction<>("x^2 - 1              - rly dude?", rlyDudeFunction),  // piecewise-function
+                new SelectFunction<>("1 / x                - infinite", getExtendedFunctionForSymmetricFunction(x -> 1d / x)),
+                new SelectFunction<>("1 / x ^ 2            - infinite", new ExtendedFunction(x -> 1d / (x * x))),
+                new SelectFunction<>("(x^2 - 1) / (x-1)    - removable", new ExtendedFunction(x -> (x * x - 1) / (x - 1)))
+        ));
+    }
+
 
     @Override
     public void execute(Console console, String context) throws Exception {
 
         console.clearScreen();
 
-        int funcNumber = readFuncNumber(console);
-        Function<Double, Double> function = getFunction(funcNumber);
-        ExtendedFunction extFunction = createExtendedFunction(funcNumber, function);
+        SelectFunction<ExtendedFunction> selectedFunc = ConsoleUtil.selectFunction(console, functions);
+
+        ExtendedFunction extFunction = selectedFunc.getFunc();
 
         console.clearScreen();
-        printInfo(funcNames[funcNumber - 1], console);
+        printInfo(selectedFunc.getName(), console);
 
-        console.println("-----------------------------");
+        ConsoleUtil.printLine(console);
         double accuracy = readAccuracy(console);
 
         console.clearScreen();
-        printInfo(funcNames[funcNumber - 1], accuracy, console);
+        printInfo(selectedFunc.getName(), accuracy, console);
 
-        console.println("-----------------------------");
+        ConsoleUtil.printLine(console);
         console.print("Введите верхний предел: ");
-        int top = readInt(console, extFunction);
+        double top = readBoundary(console, extFunction);
+
         console.println("");
         console.print("Введите нижний предел: ");
-        int bottom = readInt(console, extFunction);
+        double bottom = readBoundary(console, extFunction);
+
+        extFunction.setBoundaries(bottom, top);
 
         console.clearScreen();
-        printInfo(funcNames[funcNumber - 1], accuracy, top, bottom, console);
-
-        int[] boundaries = redefineBoundaries(funcNumber, top, bottom);
+        printInfo(selectedFunc.getName(), accuracy, top, bottom, console);
 
         SimpsonSolverExtended solverExtended = new SimpsonSolverExtended();
 
         try {
 
-            if ("integral --limit-off".equals(context.trim())) {
+            if (ConsoleUtil.getParam("limit-off", context).isPresent()) {
                 solverExtended.setLimit(Double.MAX_VALUE);
             }
 
 
-            double answer = solverExtended.solveWithAccuracy(extFunction, boundaries[1], boundaries[0], accuracy);
+            double answer = solverExtended.solveWithAccuracy(extFunction, extFunction.getBoundaries()[0], extFunction.getBoundaries()[1], accuracy);
 
             console.println("-----------------------------");
             console.println(String.format("Ответ: %f", answer));
@@ -95,7 +100,7 @@ public class Integral implements Command {
                 }
             }
         } catch (StackOverflowError | OutOfMemoryError e) {
-            console.println("\nНе хватает вычислительной мощности для поулчения ответа!");
+            console.println("\nНе хватает вычислительной мощности для получения ответа!");
             console.println("Попробуйте в следующий раз снизить точность");
         } catch (IllegalArgumentException e) {
             console.println("Лимит разбиений превышен (1_000_000)");
@@ -105,47 +110,20 @@ public class Integral implements Command {
         }
     }
 
-    private ExtendedFunction createExtendedFunction(int funcNumber, Function<Double, Double> function) {
-        ExtendedFunction extFunc = new ExtendedFunction(function);
-        if (funcNumber == 1) {
-            Map<Double, Function<Double, Double>> piecewiseMap = new HashMap<>();
-            piecewiseMap.put(1d, x -> 2d);
-            extFunc.setPiecewiseMap(piecewiseMap);
-        }
-
-        return extFunc;
-    }
-
-    private int[] redefineBoundaries(int funcNumber, int top, int bottom) {
-        switch (funcNumber) {
-            case 4:
-            case 5:
-                if ((top > 0 && bottom < 0) || (top < 0 && bottom > 0))
-                    if (top > bottom) {
-                        return new int[]{-bottom, top};
-                    } else {
-                        return new int[]{bottom, -top};
-                    }
-            default:
-                return new int[]{bottom, top};
-        }
-
-    }
-
-    private int readInt(Console console, ExtendedFunction function) throws IOException {
+    private double readBoundary(Console console, ExtendedFunction function) throws IOException {
         try {
             int numb = Integer.parseInt(console.readLine());
             double val = function.apply(numb);
             if (Double.isInfinite(val) || Double.isNaN(val)) {
                 console.println("В знаменателе получилось 0. Введите другое число");
-                return readInt(console, function);
+                return readBoundary(console, function);
             }
 
             return numb;
 
         } catch (NumberFormatException e) {
             console.println("Введите цело число в области значений int");
-            return readInt(console, function);
+            return readBoundary(console, function);
         }
     }
 
@@ -159,42 +137,6 @@ public class Integral implements Command {
         }
     }
 
-    private int readFuncNumber(Console console) throws IOException {
-        console.println("Введите номер функции");
-        int index = 1;
-        for (String funcName : funcNames) {
-            console.println("[" + index + "] " + funcName);
-            index++;
-        }
-        console.println("__________________________________");
-        int number = console.readInt();
-        if (number < 1 || number > 5) {
-            console.println("Выберите число от 1 до 5");
-            return readFuncNumber(console);
-        }
-
-        return number;
-
-    }
-
-    private Function<Double, Double> getFunction(int number) {
-
-        switch (number) {
-            case 1:
-                return FUNCTION_1;
-            case 2:
-                return FUNCTION_2;
-            case 3:
-                return FUNCTION_3;
-            case 4:
-                return FUNCTION_4;
-            case 5:
-                return FUNCTION_5;
-            default:
-                return null;
-        }
-    }
-
     private void printInfo(String function, Console console) {
         console.println("Функция: " + function);
     }
@@ -204,9 +146,35 @@ public class Integral implements Command {
         console.println(String.format("Точность: %s", accuracy));
     }
 
-    private void printInfo(String function, double accuracy, int top, int bottom, Console console) {
+    private void printInfo(String function, double accuracy, double top, double bottom, Console console) {
         printInfo(function, accuracy, console);
         console.println("Верхний предел: " + top);
         console.println("Нижний предел: " + bottom);
+    }
+
+    private static ExtendedFunction getExtendedFunctionForSymmetricFunction(Function<Double, Double> function) {
+        return new ExtendedFunction(function) {
+
+            /**
+             * Redefine boundaries
+             *
+             * For example, if function is symmetric we can manage it from [-3, 5] to [3, 5]
+             *
+             * @param bottom bottom boundary
+             * @param top bottom boundary
+             */
+            @Override
+            public void setBoundaries(double bottom, double top) {
+
+                if ((top > 0 && bottom < 0) || (top < 0 && bottom > 0)) {
+
+                    if (top > bottom) {
+                        super.setBoundaries(-bottom, top);
+                    } else {
+                        super.setBoundaries(bottom, -top);
+                    }
+                }
+            }
+        };
     }
 }
